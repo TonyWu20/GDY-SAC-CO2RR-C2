@@ -1,0 +1,283 @@
+Element_info:
+  - element: C
+    atomic_num: 6
+    LCAO: 2
+    mass: 12.0109996796
+    pot: C_00PBE.usp
+    spin: 0
+  - element: H
+    atomic_num: 0
+    LCAO: 1
+    mass: 1.0080000162
+    pot: H_00PBE.usp
+    spin: 0
+  - element: O
+    atomic_num: 8
+    LCAO: 2
+    mass: 15.9989995956
+    pot: O_00PBE.usp
+    spin: 0
+  - element: Co
+    atomic_num: 27
+    LCAO: 3
+    mass: 58.9329986572
+    pot: Co_00PBE.uspcc
+    spin: 3
+  - element: Cr
+    atomic_num: 24
+    LCAO: 5
+    mass: 51.9959983826
+    pot: Cr_00PBE.usp
+    spin: 3
+  - element: Cu
+    atomic_num: 29
+    LCAO: 3
+    mass: 63.5460014343
+    pot: Cu_00PBE.usp
+    spin: 1
+  - element: Fe
+    atomic_num: 26
+    LCAO: 3
+    mass: 55.8470001221
+    pot: Fe_00PBE.uspcc
+    spin: 4
+  - element: Mn
+    atomic_num: 25
+    LCAO: 3
+    mass: 54.9379997253
+    pot: Mn_00PBE.uspcc
+    spin: 5
+  - element: Ni
+    atomic_num: 28
+    LCAO: 3
+    mass: 58.7099990845
+    pot: Ni_00PBE.uspcc
+    spin: 2
+  - element: Sc
+    atomic_num: 21
+    LCAO: 5
+    mass: 44.9560012817
+    pot: Sc_00PBE.usp
+    spin: 0
+  - element: Ti
+    atomic_num: 22
+    LCAO: 5
+    mass: 47.9000015259
+    pot: Ti_00PBE.usp
+    spin: 0
+  - element: V
+    atomic_num: 23
+    LCAO: 5
+    mass: 50.9410018921
+    pot: V_00PBE.usp
+    spin: 2
+  - element: Zn
+    atomic_num: 30
+    LCAO: 4
+    mass: 65.3799972534
+    pot: Zn_00PBE.usp
+    spin: 0
+  - element: Ag
+    atomic_num: 47
+    LCAO: 3
+    mass: 107.8679962158
+    pot: Ag_00PBE.usp
+    spin: 0
+  - element: Cd
+    atomic_num: 48
+    LCAO: 4
+    mass: 112.4100036621
+    pot: Cd_00PBE.usp
+    spin: 0
+  - element: Mo
+    atomic_num: 42
+    LCAO: 5
+    mass: 95.9400024414
+    pot: Mo_00PBE.usp
+    spin: 2
+  - element: Nb
+    atomic_num: 41
+    LCAO: 5
+    mass: 92.90599823
+    pot: Nb_00PBE.usp
+    spin: 1
+  - element: Pd
+    atomic_num: 46
+    LCAO: 3
+    mass: 106.4000015259
+    pot: Pd_00PBE.usp
+    spin: 2
+  - element: Rh
+    atomic_num: 45
+    LCAO: 3
+    mass: 102.90599823
+    pot: Rh_00PBE.usp
+    spin: 4
+  - element: Ru
+    atomic_num: 44
+    LCAO: 5
+    mass: 101.0699996948
+    pot: Ru_00PBE.usp
+    spin: 5
+  - element: Tc
+    atomic_num: 43
+    LCAO: 5
+    mass: 98.90599823
+    pot: Tc_00PBE.usp
+    spin: 3
+  - element: Y
+    atomic_num: 39
+    LCAO: 3
+    mass: 88.90599823
+    pot: Y_00PBE.uspcc
+    spin: 0
+  - element: Zr
+    atomic_num: 40
+    LCAO: 5
+    mass: 91.2200012207
+    pot: Zr_00PBE.usp
+    spin: 0
+  - element: Au
+    atomic_num: 79
+    LCAO: 3
+    mass: 196.966003418
+    pot: Au_00PBE.usp
+    spin: 2
+  - element: Hf
+    atomic_num: 72
+    LCAO: 3
+    mass: 178.4900054932
+    pot: Hf_00PBE.uspcc
+    spin: 0
+  - element: Hg
+    atomic_num: 80
+    LCAO: 4
+    mass: 200.5899963379
+    pot: Hg_00PBE.usp
+    spin: 0
+  - element: Ir
+    atomic_num: 77
+    LCAO: 3
+    mass: 192.2200012207
+    pot: Ir_00PBE.usp
+    spin: 4
+  - element: Os
+    atomic_num: 76
+    LCAO: 5
+    mass: 190.1999969482
+    pot: Os_00PBE.usp
+    spin: 5
+  - element: Pt
+    atomic_num: 78
+    LCAO: 3
+    mass: 195.0899963379
+    pot: Pt_00PBE.usp
+    spin: 4
+  - element: Re
+    atomic_num: 75
+    LCAO: 5
+    mass: 186.2070007324
+    pot: Re_00PBE.usp
+    spin: 3
+  - element: Ta
+    atomic_num: 73
+    LCAO: 3
+    mass: 180.9479980469
+    pot: Ta_00PBE.usp
+    spin: 1
+  - element: W
+    atomic_num: 74
+    LCAO: 5
+    mass: 183.8500061035
+    pot: W_00PBE.usp
+    spin: 2
+  - element: Ce
+    atomic_num: 58
+    LCAO: 6
+    mass: 140.1199951172
+    pot: Ce_00PBE.usp
+    spin: 1
+  - element: Dy
+    atomic_num: 66
+    LCAO: 6
+    mass: 162.5
+    pot: Dy_00.usp
+    spin: 5
+  - element: Er
+    atomic_num: 68
+    LCAO: 6
+    mass: 167.2599945068
+    pot: Er_00.usp
+    spin: 3
+  - element: Eu
+    atomic_num: 63
+    LCAO: 6
+    mass: 151.9600067139
+    pot: Eu_00.usp
+    spin: 6
+  - element: Gd
+    atomic_num: 64
+    LCAO: 6
+    mass: 157.25
+    pot: Gd_00.usp
+    spin: 7
+  - element: Ho
+    atomic_num: 67
+    LCAO: 6
+    mass: 164.9299926758
+    pot: Ho_00PBE.usp
+    spin: 4
+  - element: La
+    atomic_num: 57
+    LCAO: 6
+    mass: 138.9049987793
+    pot: La_00PBE.usp
+    spin: 0
+  - element: Lu
+    atomic_num: 71
+    LCAO: 4
+    mass: 174.9700012207
+    pot: Lu_00.usp
+    spin: 0
+  - element: Nd
+    atomic_num: 60
+    LCAO: 6
+    mass: 144.2400054932
+    pot: Nd_00.usp
+    spin: 3
+  - element: Pm
+    atomic_num: 61
+    LCAO: 6
+    mass: 147.0
+    pot: Pm_00.usp
+    spin: 4
+  - element: Pr
+    atomic_num: 59
+    LCAO: 6
+    mass: 140.9080047607
+    pot: Pr_00.usp
+    spin: 2
+  - element: Sm
+    atomic_num: 62
+    LCAO: 6
+    mass: 150.3999938965
+    pot: Sm_00.usp
+    spin: 5
+  - element: Tb
+    atomic_num: 65
+    LCAO: 6
+    mass: 158.9250030518
+    pot: Tb_00.usp
+    spin: 6
+  - element: Tm
+    atomic_num: 69
+    LCAO: 6
+    mass: 168.9340057373
+    pot: Tm_00.usp
+    spin: 2
+  - element: Yb
+    atomic_num: 70
+    LCAO: 6
+    mass: 173.0399932861
+    pot: Yb_00PBE.usp
+    spin: 1

@@ -1,0 +1,7 @@
+[workspace]
+members = [
+    "GDY_SAC_CO2RR_C2",
+    "basic_models",
+    "ethane_pathway",
+    "ethyne_pathway",
+]
