@@ -6,5 +6,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-castep_model_generator_backend = { git = "https://github.com/TonyWu20/castep-model-generator-backend", branch = "dev" }
+castep_model_generator_backend = { git = "https://github.com/TonyWu20/castep-model-generator-backend", branch = "dev_generic" }
+castep-periodic-table = "0.1.*"
 nalgebra = "0.31.*"
