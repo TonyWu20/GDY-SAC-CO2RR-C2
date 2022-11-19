@@ -17,7 +17,7 @@ pub fn load_base_model() -> Result<GDYLattice<MsiModel>, std::io::Error> {
     let basic_model_file = std::fs::read_to_string(&format!("{}/../resources/SAC_GDY_M.msi", cwd))
         .unwrap_or_else(|e| panic!("Error when loading basic model, {e}"));
     let lattice = LatticeModel::try_from(basic_model_file.as_str()).unwrap();
-    let gdy_base_lattice = GDYLattice::new(lattice, "SAC_GDY_M".to_string(), 73);
+    let gdy_base_lattice = GDYLattice::new(lattice, "SAC_GDY_M".to_string());
     Ok(gdy_base_lattice)
 }
 
@@ -41,12 +41,12 @@ pub fn edit_metal(basic_model: &GDYLattice<MsiModel>, element: &Element) -> GDYL
 pub fn generate_all_metal_models() -> Result<(), Box<dyn Error>> {
     let base = load_base_model()?;
     let metals = &ELEMENT_TABLE[2..];
-    let new_lattices: Vec<GDYLattice<MsiModel>> = metals
+    metals
         .iter()
         .map(|elm: &Element| -> GDYLattice<MsiModel> { edit_metal(&base, elm) })
-        .collect();
-    new_lattices.iter().try_for_each(
-        |lat: &GDYLattice<MsiModel>| -> Result<(), Box<dyn Error>> {
+        .collect::<Vec<GDYLattice<MsiModel>>>()
+        .iter()
+        .try_for_each(|lat: &GDYLattice<MsiModel>| -> Result<(), Box<dyn Error>> {
             let lat_name = &lat.lattice_name();
             let export_dir = format!("./gdy_sac_models/{lat_name}");
             create_dir_all(&export_dir)?;
@@ -55,7 +55,6 @@ pub fn generate_all_metal_models() -> Result<(), Box<dyn Error>> {
             let export_text = msi_lat.msi_export();
             write(Path::new(&export_path), export_text)?;
             Ok(())
-        },
-    )?;
+        })?;
     Ok(())
 }

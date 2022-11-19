@@ -6,14 +6,62 @@ pub struct GDYLattice<T: ModelInfo> {
     lattice: LatticeModel<T>,
     lattice_name: String,
     metal_site: u32,
+    coord_sites: [CoordSite; 7],
+}
+
+#[derive(Debug, Clone)]
+pub struct CoordSite {
+    site_name: String,
+    site_id: u32,
+}
+
+impl CoordSite {
+    pub fn site_name(&self) -> &str {
+        self.site_name.as_ref()
+    }
+
+    pub fn site_id(&self) -> u32 {
+        self.site_id
+    }
 }
 
 impl<T: ModelInfo> GDYLattice<T> {
-    pub fn new(lattice: LatticeModel<T>, lattice_name: String, metal_site: u32) -> Self {
+    pub fn new(lattice: LatticeModel<T>, lattice_name: String) -> Self {
+        let coord_sites: [CoordSite; 7] = [
+            CoordSite {
+                site_name: "c1".into(),
+                site_id: 41,
+            },
+            CoordSite {
+                site_name: "c2".into(),
+                site_id: 42,
+            },
+            CoordSite {
+                site_name: "c3".into(),
+                site_id: 54,
+            },
+            CoordSite {
+                site_name: "c4".into(),
+                site_id: 53,
+            },
+            CoordSite {
+                site_name: "FR".into(),
+                site_id: 52,
+            },
+            CoordSite {
+                site_name: "NR".into(),
+                site_id: 40,
+            },
+            CoordSite {
+                site_name: "M".into(),
+                site_id: 73,
+            },
+        ];
         Self {
             lattice,
             lattice_name,
-            metal_site,
+            metal_site: 73,
+            coord_sites,
         }
     }
 
@@ -35,6 +83,10 @@ impl<T: ModelInfo> GDYLattice<T> {
 
     pub fn lattice_mut(&mut self) -> &mut LatticeModel<T> {
         &mut self.lattice
+    }
+
+    pub fn coord_sites(&self) -> &[CoordSite; 7] {
+        &self.coord_sites
     }
 }
 
