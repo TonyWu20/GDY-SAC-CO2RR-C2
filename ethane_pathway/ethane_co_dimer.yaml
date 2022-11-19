@@ -1,0 +1,165 @@
+directory: ethane_pathway/adsorbates/CO_dimer
+Adsorbates:
+  - name: CC
+    coordAtomIds: [1,2]
+    stemAtomIds: [1,2]
+    planeAtomIds: [1,2,2]
+    vertical: false
+    bSym: true
+    upperAtomId: 2
+    atomNums: 2
+    pathName: CO_dimer
+  - name: CCH
+    coordAtomIds: [1,2]
+    stemAtomIds: [1,2]
+    planeAtomIds: [1,2,3]
+    vertical: false
+    bSym: false
+    upperAtomId: 3
+    atomNums: 3
+    pathName: CO_dimer
+  - name: CH2C
+    coordAtomIds: [2]
+    stemAtomIds: [1,2]
+    planeAtomIds: [1,3,4]
+    vertical: false
+    bSym: false
+    upperAtomId: 4
+    atomNums: 4
+    pathName: CO_dimer
+  - name: CH2CH
+    coordAtomIds: [2]
+    stemAtomIds: [1,2]
+    planeAtomIds: [1,3,4]
+    vertical: false
+    bSym: false
+    upperAtomId: 4
+    atomNums: 5
+    pathName: CO_dimer
+  - name: CH3CH
+    coordAtomIds: [2]
+    stemAtomIds: [1,2]
+    planeAtomIds: [1,3,4]
+    vertical: false
+    bSym: false
+    upperAtomId: 4
+    atomNums: 6
+    pathName: CO_dimer
+  - name: CH3CH2
+    coordAtomIds: [2]
+    stemAtomIds: [2,3]
+    planeAtomIds: [2,3,5]
+    vertical: true
+    bSym: false
+    upperAtomId: 5
+    atomNums: 7
+    pathName: CO_dimer
+  - name: CH3CH2O
+    coordAtomIds: [3]
+    stemAtomIds: [2,3]
+    planeAtomIds: [2,3,4]
+    vertical: true
+    bSym: false
+    upperAtomId: 4
+    atomNums: 8
+    pathName: CO_dimer
+  - name: HCCHO
+    coordAtomIds: [1,5]
+    stemAtomIds: [1,5]
+    planeAtomIds: [1,2,5]
+    vertical: true
+    bSym: false
+    upperAtomId: 2
+    atomNums: 5
+    pathName: CO_dimer
+  - name: HOCC
+    coordAtomIds: [1,2]
+    stemAtomIds: [1,2]
+    planeAtomIds: [1,2,3]
+    vertical: true
+    bSym: false
+    upperAtomId: 3
+    atomNums: 4
+    pathName: CO_dimer
+  - name: HOCCOH
+    coordAtomIds: [1,2]
+    stemAtomIds: [1,2]
+    planeAtomIds: [1,2,3]
+    vertical: true
+    bSym: true
+    upperAtomId: 3
+    atomNums: 6
+    pathName: CO_dimer
+  - name: HOCHC
+    coordAtomIds: [2]
+    stemAtomIds: [1,2]
+    planeAtomIds: [1,2,3]
+    vertical: false
+    bSym: false
+    upperAtomId: 3
+    atomNums: 5
+    pathName: CO_dimer
+  - name: OCC
+    coordAtomIds: [1]
+    stemAtomIds: [1,2]
+    planeAtomIds: [1,2,3]
+    vertical: false
+    bSym: false
+    upperAtomId: 3
+    atomNums: 3
+    pathName: CO_dimer
+  - name: OCCH
+    coordAtomIds: [1]
+    stemAtomIds: [1,2]
+    planeAtomIds: [1,2,4]
+    vertical: true
+    bSym: false
+    upperAtomId: 4
+    atomNums: 4
+    pathName: CO_dimer
+  - name: OCCH_cc
+    coordAtomIds: [1,2]
+    stemAtomIds: [1,2]
+    planeAtomIds: [1,2,3]
+    vertical: true
+    bSym: false
+    upperAtomId: 3
+    atomNums: 4
+    pathName: CO_dimer
+  - name: OCCO_CC
+    coordAtomIds: [1,2]
+    stemAtomIds: [1,2]
+    planeAtomIds: [1,2,3]
+    vertical: true
+    bSym: true
+    upperAtomId: 3
+    atomNums: 4
+    pathName: CO_dimer
+  - name: OCCO_CO
+    coordAtomIds: [1,2]
+    stemAtomIds: [1,2]
+    planeAtomIds: [1,2,3]
+    vertical: true
+    bSym: false
+    upperAtomId: 3
+    atomNums: 4
+    pathName: CO_dimer
+  - name: OCCOH
+    coordAtomIds: [1,2]
+    stemAtomIds: [1,2]
+    planeAtomIds: [1,2,3]
+    vertical: true
+    bSym: false
+    upperAtomId: 3
+    atomNums: 5
+    pathName: CO_dimer
+  - name: OHCCH
+    coordAtomIds: [1,2]
+    stemAtomIds: [1,2]
+    planeAtomIds: [1,2,4]
+    vertical: true
+    bSym: false
+    upperAtomId: 5
+    atomNums: 5
+    pathName: CO_dimer
+

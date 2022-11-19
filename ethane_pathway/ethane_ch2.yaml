@@ -1,0 +1,56 @@
+directory: ethane_pathway/adsorbates/CH2_coupling
+Adsorbates:
+  - name: COOH
+    coordAtomIds: [1]
+    stemAtomIds: [2,3]
+    planeAtomIds: [1,2,3]
+    vertical: true
+    bSym: false
+    upperAtomId: 4
+    atomNums: 4
+    pathName: CH2
+  - name: CO
+    coordAtomIds: [1]
+    stemAtomIds: [1,2]
+    planeAtomIds: [1,2,2]
+    vertical: true
+    bSym: false
+    upperAtomId: 2
+    atomNums: 2
+    pathName: CH2
+  - name: COH
+    coordAtomIds: [1]
+    stemAtomIds: [1,2]
+    planeAtomIds: [1,2,3]
+    vertical: true
+    bSym: false
+    upperAtomId: 3
+    atomNums: 3
+    pathName: CH2
+  - name: CH2
+    coordAtomIds: [1]
+    stemAtomIds: [2,3]
+    planeAtomIds: [1,2,3]
+    vertical: true
+    bSym: true
+    upperAtomId: 2
+    atomNums: 3
+    pathName: CH2
+  - name: CH3
+    coordAtomIds: [1]
+    stemAtomIds: [1,2]
+    planeAtomIds: [2,3,4]
+    vertical: false
+    bSym: true
+    upperAtomId: 2
+    atomNums: 4
+    pathName: CH2
+  - name: C2H6
+    coordAtomIds: [2,3]
+    stemAtomIds: [2,3]
+    planeAtomIds: [2,3,8]
+    vertical: true
+    bSym: true
+    upperAtomId: 8
+    atomNums: 8
+    pathName: CH2
