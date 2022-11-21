@@ -57,7 +57,7 @@ pub const GDY_COORD_SITES: [CoordSite; 7] = [
 
 impl<'a> CoordSite<'a> {
     pub fn site_name(&self) -> &str {
-        self.site_name.as_ref()
+        self.site_name
     }
     pub fn site_id(&self) -> u32 {
         self.site_id
