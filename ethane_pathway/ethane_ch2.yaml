@@ -4,7 +4,8 @@ Adsorbates:
     coordAtomIds: [1]
     stemAtomIds: [2,3]
     planeAtomIds: [1,2,3]
-    vertical: true
+    plane_angle: 90.0
+    stem_angle_at_coord: 0.0
     bSym: false
     upperAtomId: 4
     atomNums: 4
@@ -13,7 +14,8 @@ Adsorbates:
     coordAtomIds: [1]
     stemAtomIds: [1,2]
     planeAtomIds: [1,2,2]
-    vertical: true
+    plane_angle: 90.0
+    stem_angle_at_coord: 90.0
     bSym: false
     upperAtomId: 2
     atomNums: 2
@@ -22,7 +24,8 @@ Adsorbates:
     coordAtomIds: [1]
     stemAtomIds: [1,2]
     planeAtomIds: [1,2,3]
-    vertical: true
+    plane_angle: 90.0
+    stem_angle_at_coord: 90.0
     bSym: false
     upperAtomId: 3
     atomNums: 3
@@ -31,16 +34,18 @@ Adsorbates:
     coordAtomIds: [1]
     stemAtomIds: [2,3]
     planeAtomIds: [1,2,3]
-    vertical: true
+    plane_angle: 90.0
+    stem_angle_at_coord: 0.0
     bSym: true
     upperAtomId: 2
     atomNums: 3
     pathName: CH2
   - name: CH3
     coordAtomIds: [1]
-    stemAtomIds: [1,2]
+    stemAtomIds: [1,1] # The virtual stem is from atom 1 pointing perpendicularly to plane #2,#3,#4
     planeAtomIds: [2,3,4]
-    vertical: false
+    plane_angle: 0.0
+    stem_angle_at_coord: 90.0
     bSym: true
     upperAtomId: 2
     atomNums: 4
@@ -49,6 +54,7 @@ Adsorbates:
     coordAtomIds: [2,3]
     stemAtomIds: [2,3]
     planeAtomIds: [2,3,8]
+    plane_angle: 90.0
     vertical: true
     bSym: true
     upperAtomId: 8
