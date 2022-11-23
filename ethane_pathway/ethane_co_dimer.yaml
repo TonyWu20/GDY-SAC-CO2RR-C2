@@ -51,27 +51,27 @@ Adsorbates:
   - name: CH3CH
     coordAtomIds: [2]
     stemAtomIds: [1,2]
-    planeAtomIds: [1,3,4]
-    plane_angle: 90.0
+    planeAtomIds: [1,2,6]
+    plane_angle: 30.0
     stem_angle_at_coord: 0.0
     bSym: false
-    upperAtomId: 4
+    upperAtomId: 6
     atomNums: 6
     pathName: CO_dimer
   - name: CH3CH2
-    coordAtomIds: [2]
+    coordAtomIds: [3]
     stemAtomIds: [2,3]
     planeAtomIds: [2,3,5]
-    plane_angle: 90.0
+    plane_angle: 30.0
     stem_angle_at_coord: 0.0
     bSym: false
-    upperAtomId: 5
+    upperAtomId: 1
     atomNums: 7
     pathName: CO_dimer
   - name: CH3CH2O
-    coordAtomIds: [3]
+    coordAtomIds: [8]
     stemAtomIds: [2,3]
-    planeAtomIds: [2,3,4]
+    planeAtomIds: [2,3,8]
     plane_angle: 90.0
     stem_angle_at_coord: 0.0
     bSym: false

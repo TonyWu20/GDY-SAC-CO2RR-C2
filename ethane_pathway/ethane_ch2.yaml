@@ -54,7 +54,7 @@ Adsorbates:
     coordAtomIds: [2,3]
     stemAtomIds: [2,3]
     planeAtomIds: [2,3,8]
-    plane_angle: 90.0
+    plane_angle: 60.0
     stem_angle_at_coord: 0.0
     bSym: true
     upperAtomId: 8
