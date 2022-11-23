@@ -41,6 +41,8 @@ pub fn edit_metal(basic_model: &GDYLattice<MsiModel>, element: &Element) -> GDYL
 pub fn generate_all_metal_models() -> Result<Vec<GDYLattice<MsiModel>>, std::io::Error> {
     let base = load_base_model()?;
     let metals = &ELEMENT_TABLE[3..];
+    #[cfg(debug_assertions)]
+    let metals = &ELEMENT_TABLE[3..4];
     Ok(metals
         .iter()
         .map(|elm: &Element| -> GDYLattice<MsiModel> { edit_metal(&base, elm) })
@@ -49,7 +51,7 @@ pub fn generate_all_metal_models() -> Result<Vec<GDYLattice<MsiModel>>, std::io:
 
 pub fn write_all_metal_models() -> Result<(), Box<dyn Error>> {
     let base = load_base_model()?;
-    let metals = &ELEMENT_TABLE[2..];
+    let metals = &ELEMENT_TABLE[3..];
     metals
         .iter()
         .map(|elm: &Element| -> GDYLattice<MsiModel> { edit_metal(&base, elm) })

@@ -1,4 +1,4 @@
-use std::{error::Error, io};
+use std::{error::Error, fs, io};
 
 use basic_models::{
     gdy_lattice::{GDYLattice, GDY_COORD_SITES, GDY_DOUBLE_CASES, GDY_SINGLE_CASES},
@@ -9,9 +9,11 @@ use castep_model_generator_backend::{
     assemble::{AdsParams, AdsParamsBuilder, AdsorptionBuilder},
     builder_typestate::No,
     external_info::{adsorbate_table::AdsTab, YamlTable},
+    lattice::LatticeModel,
     model_type::{cell::CellModel, msi::MsiModel, ModelInfo},
     param_writer::{
         castep_param::{BandStructureParam, GeomOptParam},
+        ms_aux_files::to_xsd_scripts,
         seed_writer::SeedWriter,
     },
 };
@@ -29,14 +31,20 @@ fn build_ads_param<'a, T>(
 where
     T: ModelInfo,
 {
-    let plane_angle = if info.vertical() { 90.0 } else { 0.0 };
-    let special = ["OCC", "OCCH"];
-    let coord_angle = if special.contains(&info.name()) {
-        45.0
-    } else if "CO" == info.name() {
-        90.0
+    let plane_angle = if let Some(angle) = info.plane_angle() {
+        angle
     } else {
         0.0
+    };
+    let coord_angle = if let Some(angle) = info.stem_angle_at_coord() {
+        angle
+    } else {
+        0.0
+    };
+    let plane_atom_ids = if let Some(ids) = info.plane_atom_ids() {
+        ids.as_slice()
+    } else {
+        &[1]
     };
     let coord_nums = info.coord_atom_ids().len();
     let ads_direction = if coord_nums == 1 {
@@ -48,13 +56,13 @@ where
             .unwrap()
     };
     AdsParamsBuilder::<No, No, No, No>::new()
+        .with_ads_direction(&ads_direction)
         .with_plane_angle(plane_angle)
         .with_stem_coord_angle(coord_angle)
         .with_bond_length(1.4)
         .with_stem_atom_ids(info.stem_atom_ids())
         .with_coord_atom_ids(info.coord_atom_ids())
-        .with_plane_atom_ids(info.plane_atom_ids())
-        .with_ads_direction(&ads_direction)
+        .with_plane_atom_ids(plane_atom_ids)
         .finish()
 }
 
@@ -89,7 +97,7 @@ fn create_adsorption_at_site<P: Pathway>(
         .add_adsorbate(ads_lattice)
         .with_location_at_sites(target_site_ids)
         .with_ads_params(ads_param)
-        .init_ads()
+        .init_ads(ads.ads_info().upper_atom_id())
         .place_adsorbate()
         .build_adsorbed_lattice();
     let mut lat_name: String = gdy_lat.lattice_name().to_string();
@@ -108,13 +116,26 @@ fn generate_seed_file(
         .with_potential_loc(potential_loc_str)
         .build();
     geom_seed_writer.write_seed_files()?;
-    // #[cfg(not(debug_assertions))]
-    // {
-    //     geom_seed_writer.copy_potentials()?;
-    // }
+    copy_smcastep_extension(&geom_seed_writer)?;
+    #[cfg(not(debug_assertions))]
+    {
+        geom_seed_writer.copy_potentials()?;
+    }
 
     let bs_writer: SeedWriter<BandStructureParam> = geom_seed_writer.into();
     bs_writer.write_seed_files()?;
+    Ok(())
+}
+fn copy_smcastep_extension(writer: &SeedWriter<GeomOptParam>) -> Result<(), io::Error> {
+    let dest_dir = writer.create_export_dir()?;
+    let with_seed_name = format!("SMCastep_Extension_{}.xms", writer.seed_name());
+    let dest_path = dest_dir.join(&with_seed_name);
+    if !dest_path.exists() {
+        fs::copy(
+            &format!("{}/../resources/SMCastep_Extension.xms", CWD),
+            dest_path,
+        )?;
+    }
     Ok(())
 }
 
@@ -180,7 +201,7 @@ pub fn gen_ethane_pathway_seeds() -> Result<(), Box<dyn Error>> {
     let potential_loc_str = format!("{cwd}/../../C-GDY-SAC/Potentials");
     generate_all_metal_models()
         .unwrap()
-        .par_iter()
+        .iter()
         .for_each(|gdy_lat| {
             iter_all_ads::<CH2Pathway>(
                 gdy_lat,
@@ -195,5 +216,6 @@ pub fn gen_ethane_pathway_seeds() -> Result<(), Box<dyn Error>> {
                 &potential_loc_str,
             );
         });
+    to_xsd_scripts("ethane_pathway_models")?;
     Ok(())
 }
