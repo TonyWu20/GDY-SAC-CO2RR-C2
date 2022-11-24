@@ -56,15 +56,15 @@ fn main() -> Result<(), Box<dyn Error>> {
                 println!("{}", potential_loc_path);
             }
             Mode::Fast => {
-                gen_ethane_pathway_seeds()?;
+                gen_ethane_pathway_seeds(&target_dir_path, &potential_loc_path)?;
             }
             _ => {
-                gen_ethane_pathway_seeds()?;
+                gen_ethane_pathway_seeds(&target_dir_path, &potential_loc_path)?;
                 post_copy_potentials(&target_dir_path, &potential_loc_path)?;
             }
         },
         None => {
-            gen_ethane_pathway_seeds()?;
+            gen_ethane_pathway_seeds(&target_dir_path, &potential_loc_path)?;
         }
     }
     Ok(())

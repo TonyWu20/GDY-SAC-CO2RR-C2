@@ -191,14 +191,15 @@ fn iter_all_ads<'a, P>(
         })
 }
 
-pub fn gen_ethane_pathway_seeds() -> Result<(), Box<dyn Error>> {
+pub fn gen_ethane_pathway_seeds(
+    export_loc_str: &str,
+    potential_loc_str: &str,
+) -> Result<(), Box<dyn Error>> {
     let cwd = env!("CARGO_MANIFEST_DIR");
     let ch2_table_path = format!("{cwd}/../ethane_pathway/ethane_ch2.yaml");
     let co_table_path = format!("{cwd}/../ethane_pathway/ethane_co_dimer.yaml");
     let ch2_table = AdsTab::load_table(&ch2_table_path)?;
     let co_table = AdsTab::load_table(&co_table_path)?;
-    let export_loc_str = format!("{cwd}/../ethane_pathway_models");
-    let potential_loc_str = format!("{cwd}/../../C-GDY-SAC/Potentials");
     generate_all_metal_models()
         .unwrap()
         .par_iter()
