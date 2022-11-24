@@ -8,7 +8,7 @@ use castep_model_generator_backend::{
     model_type::{msi::MsiModel, ModelInfo},
 };
 
-pub trait Pathway {}
+pub trait Pathway: Send + Sync {}
 
 #[derive(Debug)]
 /// Marker struct to represent "CH2 coupling pathway"
