@@ -1,4 +1,8 @@
-use std::{error::Error, fs, io};
+use std::{
+    error::Error,
+    fs::{self, read_to_string},
+    io,
+};
 
 use basic_models::{
     gdy_lattice::{GDYLattice, GDY_COORD_SITES, GDY_DOUBLE_CASES, GDY_SINGLE_CASES},
@@ -17,6 +21,7 @@ use castep_model_generator_backend::{
         seed_writer::SeedWriter,
     },
 };
+use glob::glob;
 use rayon::prelude::*;
 
 use ethane_pathway::{AdsModel, CH2Pathway, COPathway, Pathway};
@@ -117,11 +122,6 @@ fn generate_seed_file(
         .build();
     geom_seed_writer.write_seed_files()?;
     copy_smcastep_extension(&geom_seed_writer)?;
-    #[cfg(not(debug_assertions))]
-    {
-        geom_seed_writer.copy_potentials()?;
-    }
-
     let bs_writer: SeedWriter<BandStructureParam> = geom_seed_writer.into();
     bs_writer.write_seed_files()?;
     Ok(())
@@ -146,21 +146,21 @@ fn iter_over_sites<P: Pathway>(
     let coord_atom_nums = adsorbate.ads_info().coord_atom_ids().len();
     let adsorbed_lats: Vec<GDYLattice<CellModel>> = if coord_atom_nums == 1 {
         GDY_SINGLE_CASES
-            .iter()
+            .par_iter()
             .map(|site| create_adsorption_at_site(gdy_lat, adsorbate, &[*site]))
             .collect()
     } else if adsorbate.ads_info().symmetric() {
         GDY_DOUBLE_CASES
-            .iter()
+            .par_iter()
             .map(|sites| create_adsorption_at_site(gdy_lat, adsorbate, sites))
             .collect()
     } else {
         let mut asym: Vec<GDYLattice<CellModel>> = GDY_DOUBLE_CASES
-            .iter()
+            .par_iter()
             .map(|sites| create_adsorption_at_site(gdy_lat, adsorbate, sites))
             .collect();
         let asym_reverse: Vec<GDYLattice<CellModel>> = GDY_DOUBLE_CASES
-            .iter()
+            .par_iter()
             .map(|[site_1, site_2]| {
                 create_adsorption_at_site(gdy_lat, adsorbate, &[*site_2, *site_1])
             })
@@ -182,7 +182,7 @@ fn iter_all_ads<'a, P>(
     ads_tab
         .adsorbates()
         .unwrap()
-        .iter()
+        .par_iter()
         .map(AdsModel::<MsiModel, P>::from)
         .for_each(|ads| {
             iter_over_sites(gdy_lat, &ads).iter().for_each(|gdy_lat| {
@@ -201,7 +201,7 @@ pub fn gen_ethane_pathway_seeds() -> Result<(), Box<dyn Error>> {
     let potential_loc_str = format!("{cwd}/../../C-GDY-SAC/Potentials");
     generate_all_metal_models()
         .unwrap()
-        .iter()
+        .par_iter()
         .for_each(|gdy_lat| {
             iter_all_ads::<CH2Pathway>(
                 gdy_lat,
@@ -217,5 +217,38 @@ pub fn gen_ethane_pathway_seeds() -> Result<(), Box<dyn Error>> {
             );
         });
     to_xsd_scripts("ethane_pathway_models")?;
+    Ok(())
+}
+
+pub fn post_copy_potentials(
+    target_directory: &str,
+    potential_loc_str: &str,
+) -> Result<(), io::Error> {
+    let msi_pattern = format!("{target_directory}/**/*.msi");
+    glob(&msi_pattern)
+        .unwrap()
+        .into_iter()
+        .par_bridge()
+        .try_for_each(|entry| -> Result<(), io::Error> {
+            let content = read_to_string(entry.as_ref().unwrap()).unwrap();
+            let lat: LatticeModel<MsiModel> = LatticeModel::try_from(content.as_str()).unwrap();
+            let cell: LatticeModel<CellModel> = lat.into();
+            let filepath = entry.as_ref().unwrap().clone();
+            let dir_path = filepath
+                .parent()
+                .unwrap()
+                .parent()
+                .unwrap()
+                .to_str()
+                .unwrap()
+                .clone();
+            let cell_name = filepath.file_stem().unwrap().to_str().unwrap().to_owned();
+            let writer: SeedWriter<GeomOptParam> = SeedWriter::build(&cell)
+                .with_seed_name(&cell_name)
+                .with_export_loc(dir_path)
+                .with_potential_loc(potential_loc_str)
+                .build();
+            writer.copy_potentials()
+        })?;
     Ok(())
 }
