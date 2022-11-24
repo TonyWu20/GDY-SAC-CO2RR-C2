@@ -52,6 +52,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         Some(m) => match m {
             Mode::Debug => {
                 println!("{}", cwd);
+                println!("{}", target_dir_path);
+                println!("{}", potential_loc_path);
             }
             Mode::Fast => {
                 gen_ethane_pathway_seeds()?;
