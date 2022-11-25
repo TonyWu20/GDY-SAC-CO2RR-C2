@@ -2,11 +2,8 @@
 
 use std::{any::TypeId, fs, marker::PhantomData};
 
-use castep_model_generator_backend::{
-    adsorbate::{AdsInfo, Adsorbate},
-    lattice::LatticeModel,
-    model_type::{msi::MsiModel, ModelInfo},
-};
+use castep_model_core::{LatticeModel, ModelInfo, MsiModel};
+use castep_model_generator_backend::adsorbate::{AdsInfo, Adsorbate};
 
 pub trait Pathway: Send + Sync {}
 

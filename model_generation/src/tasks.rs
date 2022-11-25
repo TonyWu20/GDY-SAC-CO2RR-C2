@@ -8,18 +8,19 @@ use basic_models::{
     gdy_lattice::{GDYLattice, GDY_COORD_SITES, GDY_DOUBLE_CASES, GDY_SINGLE_CASES},
     gdy_model_edit::generate_all_metal_models,
 };
-use castep_model_generator_backend::{
-    adsorbate::AdsInfo,
-    assemble::{AdsParams, AdsParamsBuilder, AdsorptionBuilder},
+use castep_model_core::{
     builder_typestate::No,
-    external_info::{adsorbate_table::AdsTab, YamlTable},
-    lattice::LatticeModel,
-    model_type::{cell::CellModel, msi::MsiModel, ModelInfo},
     param_writer::{
         castep_param::{BandStructureParam, GeomOptParam},
         ms_aux_files::to_xsd_scripts,
         seed_writer::SeedWriter,
     },
+    CellModel, LatticeModel, ModelInfo, MsiModel,
+};
+use castep_model_generator_backend::{
+    adsorbate::AdsInfo,
+    assemble::{AdsParams, AdsParamsBuilder, AdsorptionBuilder},
+    external_info::{adsorbate_table::AdsTab, YamlTable},
 };
 use glob::glob;
 use rayon::prelude::*;

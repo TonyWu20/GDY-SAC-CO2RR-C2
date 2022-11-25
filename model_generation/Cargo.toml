@@ -8,7 +8,8 @@ edition = "2021"
 [dependencies]
 basic_models = { path = "../basic_models" }
 ethane_pathway = { path = "../ethane_pathway" }
-castep_model_generator_backend = { git = "https://github.com/TonyWu20/castep-model-generator-backend", branch = "dev_generic" }
+castep-model-core = "0.1.*"
+castep_model_generator_backend = "2.*"
 castep-periodic-table = "0.1.*"
 rayon = "1.*"
 glob = "*"

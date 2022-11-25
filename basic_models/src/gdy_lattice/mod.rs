@@ -1,4 +1,4 @@
-use castep_model_generator_backend::{lattice::LatticeModel, model_type::ModelInfo};
+use castep_model_core::{LatticeModel, ModelInfo};
 
 extern crate nalgebra;
 #[derive(Debug, Clone)]

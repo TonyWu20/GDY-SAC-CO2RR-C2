@@ -4,9 +4,7 @@ use std::{
     path::Path,
 };
 
-use castep_model_generator_backend::{
-    atom::Atom, lattice::LatticeModel, model_type::msi::MsiModel,
-};
+use castep_model_core::{Atom, LatticeModel, MsiModel};
 
 use crate::gdy_lattice::GDYLattice;
 
