@@ -76,10 +76,8 @@ where
 #[cfg(test)]
 #[test]
 fn parse_adsorbate() {
-    use castep_model_generator_backend::{
-        external_info::{adsorbate_table::AdsTab, YamlTable},
-        model_type::msi::MsiModel,
-    };
+    use castep_model_core::MsiModel;
+    use castep_model_generator_backend::external_info::{adsorbate_table::AdsTab, YamlTable};
 
     let cwd = env!("CARGO_MANIFEST_DIR");
     println!("{}", cwd);
