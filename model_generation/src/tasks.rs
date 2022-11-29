@@ -1,6 +1,6 @@
 use std::{
     error::Error,
-    fs::{self, read_to_string},
+    fs::{self, create_dir_all, read_to_string, rename},
     io,
 };
 
@@ -22,6 +22,7 @@ use castep_model_generator_backend::{
     assemble::{AdsParams, AdsParamsBuilder, AdsorptionBuilder},
     external_info::{adsorbate_table::AdsTab, YamlTable},
 };
+use castep_periodic_table::data::ELEMENT_TABLE;
 use glob::glob;
 use rayon::prelude::*;
 
@@ -253,4 +254,32 @@ pub fn post_copy_potentials(
             writer.copy_potentials()
         })?;
     Ok(())
+}
+
+pub fn reorganize_folders(target_directory: &str) -> Result<(), io::Error> {
+    let metal_elements = &ELEMENT_TABLE[3..];
+    metal_elements.iter().try_for_each(|elm| {
+        let metal_dir = format!("{}/{}", target_directory, elm.symbol());
+        let metal_seeds_pattern = format!("{}/**/SAC_GDY_{}*_opt", target_directory, elm.symbol());
+        create_dir_all(&metal_dir)?;
+        glob(&metal_seeds_pattern)
+            .unwrap()
+            .into_iter()
+            .par_bridge()
+            .try_for_each(|entry| -> Result<(), io::Error> {
+                let dir_path = entry.unwrap();
+                let new_path = format!(
+                    "{}/{}",
+                    metal_dir,
+                    dir_path
+                        .components()
+                        .last()
+                        .unwrap()
+                        .as_os_str()
+                        .to_str()
+                        .unwrap()
+                );
+                rename(dir_path, new_path)
+            })
+    })
 }

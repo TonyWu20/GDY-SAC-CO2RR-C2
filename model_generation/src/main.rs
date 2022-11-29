@@ -4,6 +4,7 @@ use std::error::Error;
 
 use crate::tasks::{gen_ethane_pathway_seeds, post_copy_potentials};
 use clap::{Parser, ValueEnum};
+use tasks::reorganize_folders;
 
 // use basic_models::gdy_model_edit::generate_all_metal_models;
 
@@ -29,6 +30,8 @@ enum Mode {
     Full,
     /// Copy potentials after seed files generation
     Post,
+    /// Reorganize
+    Reorg,
     /// Debug
     Debug,
 }
@@ -55,9 +58,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                 println!("{}", target_dir_path);
                 println!("{}", potential_loc_path);
             }
-            Mode::Fast => {
-                gen_ethane_pathway_seeds(&target_dir_path, &potential_loc_path)?;
-            }
+            Mode::Fast => gen_ethane_pathway_seeds(&target_dir_path, &potential_loc_path)?,
+            Mode::Reorg => reorganize_folders(&target_dir_path)?,
             _ => {
                 gen_ethane_pathway_seeds(&target_dir_path, &potential_loc_path)?;
                 post_copy_potentials(&target_dir_path, &potential_loc_path)?;
