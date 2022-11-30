@@ -24,7 +24,7 @@ use castep_model_generator_backend::{
 };
 use castep_periodic_table::data::ELEMENT_TABLE;
 use glob::glob;
-use indicatif::{MultiProgress, ParallelProgressIterator, ProgressBar};
+use indicatif::{ParallelProgressIterator, ProgressBar};
 use rayon::prelude::*;
 
 use ethane_pathway::{AdsModel, CH2Pathway, COPathway, Pathway};
