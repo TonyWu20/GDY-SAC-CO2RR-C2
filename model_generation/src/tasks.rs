@@ -24,6 +24,7 @@ use castep_model_generator_backend::{
 };
 use castep_periodic_table::data::ELEMENT_TABLE;
 use glob::glob;
+use indicatif::{MultiProgress, ParallelProgressIterator, ProgressBar};
 use rayon::prelude::*;
 
 use ethane_pathway::{AdsModel, CH2Pathway, COPathway, Pathway};
@@ -205,6 +206,7 @@ pub fn gen_ethane_pathway_seeds(
     generate_all_metal_models()
         .unwrap()
         .par_iter()
+        .progress()
         .for_each(|gdy_lat| {
             iter_all_ads::<CH2Pathway>(
                 gdy_lat,
@@ -228,6 +230,8 @@ pub fn post_copy_potentials(
     potential_loc_str: &str,
 ) -> Result<(), io::Error> {
     let msi_pattern = format!("{target_directory}/**/*.msi");
+    let num_seeds = glob(&msi_pattern).unwrap().count();
+    let bar = ProgressBar::new(num_seeds as u64);
     glob(&msi_pattern)
         .unwrap()
         .into_iter()
@@ -251,13 +255,20 @@ pub fn post_copy_potentials(
                 .with_export_loc(dir_path)
                 .with_potential_loc(potential_loc_str)
                 .build();
-            writer.copy_potentials()
+            writer.copy_potentials()?;
+            bar.inc(1);
+            Ok(())
         })?;
+    bar.finish();
     Ok(())
 }
 
 pub fn reorganize_folders(target_directory: &str) -> Result<(), io::Error> {
     let metal_elements = &ELEMENT_TABLE[3..];
+    let num_seeds = glob(&format!("{}/**/SAC_GDY*opt", target_directory))
+        .unwrap()
+        .count();
+    let bar = ProgressBar::new(num_seeds as u64);
     metal_elements.iter().try_for_each(|elm| {
         let metal_dir = format!("{}/{}", target_directory, elm.symbol());
         let metal_seeds_pattern = format!("{}/**/SAC_GDY_{}*_opt", target_directory, elm.symbol());
@@ -279,7 +290,10 @@ pub fn reorganize_folders(target_directory: &str) -> Result<(), io::Error> {
                         .to_str()
                         .unwrap()
                 );
-                rename(dir_path, new_path)
+                rename(dir_path, new_path)?;
+                bar.inc(1);
+                Ok(())
             })
-    })
+    })?;
+    Ok(bar.finish())
 }

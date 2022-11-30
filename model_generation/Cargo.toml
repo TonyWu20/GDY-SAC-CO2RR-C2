@@ -10,6 +10,7 @@ basic_models = { path = "../basic_models" }
 ethane_pathway = { path = "../ethane_pathway" }
 castep-model-core = "0.1.*"
 castep_model_generator_backend = "2.*"
+indicatif = {version="0.*", features=["rayon"]}
 castep-periodic-table = "0.1.*"
 rayon = "1.*"
 glob = "*"
