@@ -2,6 +2,8 @@
 members = [
     "model_generation",
     "basic_models",
-    "ethane_pathway",
-    "ethyne_pathway",
+    "adsorption_pathways"
+    # "ethane_pathway",
+    # "ethyne_pathway",
+    # "water_pathway"
 ]
