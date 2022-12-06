@@ -3,7 +3,7 @@
 reference: 
 1. https://doi.org/10.1016/j.mtener.2018.10.003
 
-![Ethane](./Ethane.jpg.jpeg) 
+![Ethane](./Ethane.jpg) 
 ## A. CH2 coupling and hydrogenation pathway
 1. COOH
 2. CO
