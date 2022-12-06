@@ -27,7 +27,7 @@ use glob::glob;
 use indicatif::{ParallelProgressIterator, ProgressBar};
 use rayon::prelude::*;
 
-use ethane_pathway::{AdsModel, CH2Pathway, COPathway, Pathway};
+use adsorption_pathways::{AdsModel, CH2Pathway, COPathway, Pathway, Water};
 
 const CWD: &str = env!("CARGO_MANIFEST_DIR");
 
@@ -199,10 +199,12 @@ pub fn gen_ethane_pathway_seeds(
     potential_loc_str: &str,
 ) -> Result<(), Box<dyn Error>> {
     let cwd = env!("CARGO_MANIFEST_DIR");
-    let ch2_table_path = format!("{cwd}/../ethane_pathway/ethane_ch2.yaml");
-    let co_table_path = format!("{cwd}/../ethane_pathway/ethane_co_dimer.yaml");
+    let ch2_table_path = format!("{cwd}/../adsorption_pathways/ethane_ch2.yaml");
+    let co_table_path = format!("{cwd}/../adsorption_pathways/ethane_co_dimer.yaml");
+    let water_table_path = format!("{cwd}/../adsorption_pathways/water.yaml");
     let ch2_table = AdsTab::load_table(&ch2_table_path)?;
     let co_table = AdsTab::load_table(&co_table_path)?;
+    let water_table = AdsTab::load_table(&water_table_path)?;
     generate_all_metal_models()
         .unwrap()
         .par_iter()
@@ -218,6 +220,12 @@ pub fn gen_ethane_pathway_seeds(
                 gdy_lat,
                 &co_table,
                 &format!("{}/{}", export_loc_str, "CO_dimer"),
+                &potential_loc_str,
+            );
+            iter_all_ads::<Water>(
+                gdy_lat,
+                &water_table,
+                &format!("{}/{}", export_loc_str, "water"),
                 &potential_loc_str,
             );
         });

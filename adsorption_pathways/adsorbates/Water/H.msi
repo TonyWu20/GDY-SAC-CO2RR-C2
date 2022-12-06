@@ -2,6 +2,7 @@
 (1 Model
   (2 Atom
     (A C ACL "0 H")
+    (A D XYZ (0.0 0.0 0.0))
     (A I Id 1)
   )
 )

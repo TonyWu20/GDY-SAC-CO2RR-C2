@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 basic_models = { path = "../basic_models" }
-ethane_pathway = { path = "../ethane_pathway" }
+adsorption_pathways = { path = "../adsorption_pathways" }
 castep-model-core = "0.1.*"
 castep_model_generator_backend = "2.*"
 indicatif = {version="0.*", features=["rayon"]}

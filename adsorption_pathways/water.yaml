@@ -1,0 +1,35 @@
+directory: water_pathway/adsorbates
+Adsorbates:
+  - name: H
+    coordAtomIds: [1]
+    stemAtomIds: [1]
+    # planeAtomIds
+    # plane_angle
+    # stem_angle_at_coord
+    bSym: true
+    upperAtomId: 1
+    atomNums: 1
+    pathName: water
+  - name: OH
+    coordAtomIds: [1]
+    stemAtomIds: [1,2]
+    # planeAtomIds
+    # plane_angle
+    stem_angle_at_coord: 90.0
+    bSym: true
+    upperAtomId: 2
+    atomNums: 2
+    pathName: water
+  - name: H2O
+    coordAtomIds: [1]
+    stemAtomIds: [2,3]
+    planeAtomIds: [1,2,3]
+    plane_angle: 90.0 # vertical to the xy plane
+    stem_angle_at_coord: 0.0 # the H-H stem parallel to the xy plane
+    bSym: true
+    upperAtomId: 2
+    atomNums: 3
+    pathName: water
+
+
+    

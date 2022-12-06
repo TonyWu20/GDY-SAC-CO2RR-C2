@@ -9,4 +9,3 @@ edition = "2021"
 castep-model-core = "0.1.*"
 castep_model_generator_backend = "2.*"
 serde = { version = "1.0", features = ["derive"] }
-nalgebra = "0.31.*"

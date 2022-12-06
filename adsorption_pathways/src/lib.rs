@@ -4,17 +4,21 @@ use std::{any::TypeId, fs, marker::PhantomData};
 
 use castep_model_core::{LatticeModel, ModelInfo, MsiModel};
 use castep_model_generator_backend::adsorbate::{AdsInfo, Adsorbate};
-use ethane_pathway::{CH2Pathway, COPathway};
-use water_pathway::Water;
 pub mod ethane_pathway;
 pub mod water_pathway;
+
+pub use ethane_pathway::{CH2Pathway, COPathway};
+pub use water_pathway::Water;
+
+#[cfg(test)]
+mod test;
 
 /// Trait to act as a `Pathway`
 pub trait Pathway: Send + Sync {}
 
 #[non_exhaustive]
 #[derive(PartialEq, Eq)]
-enum PathwayId {
+pub enum PathwayId {
     CH2,
     CO,
     Water,
@@ -33,7 +37,7 @@ impl PathwayId {
             Self::Undefined
         }
     }
-    fn target_directory(&self) -> Option<&str> {
+    fn source_directory(&self) -> Option<&str> {
         match *self {
             Self::CH2 => Some("CH2_coupling"),
             Self::CO => Some("CO_dimer"),
@@ -85,7 +89,7 @@ where
         let ads_name = item.name();
         let cwd = env!("CARGO_MANIFEST_DIR");
         let path_type_id = PathwayId::new(TypeId::of::<P>());
-        let pathway_dir = path_type_id.target_directory().unwrap();
+        let pathway_dir = path_type_id.source_directory().unwrap();
         let filepath = format!("{}/adsorbates/{}/{}.msi", cwd, pathway_dir, ads_name);
         let msi_content = fs::read_to_string(filepath).unwrap();
         let msi_model = LatticeModel::try_from(msi_content.as_str()).unwrap();
