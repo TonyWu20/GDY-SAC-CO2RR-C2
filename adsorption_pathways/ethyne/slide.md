@@ -1,5 +1,38 @@
+<style>
+:root {
+font-family: "Source Sans Pro"
+}
+</style>
+<style scoped>
+section {
+    background: #f4f4f4
+}
+h1 {
+text-align: right
+}
+h2 {
+text-align: right
+}
+</style>
+![bg right](./bg.jpg)
+# Group Meeting
+## 07/12/22
+---
+<style scoped>
+h1 {
+text-align: center
+}
+h2 {
+text-align: right
+}
+</style>
 # Modelling of Ethyne Pathway
 ---
+<style scoped>
+blockquote {
+    font-size: 12px
+}
+</style>
 # Ethane, Ethylene and Ethyne
 ![bg right contain Ethyne formation](../Ethyne.gif)
 1. Key intermediates: <code>H<sub>2</sub>C=CH</code>
@@ -9,6 +42,14 @@
 > Reference:
 > 1. Journal of Electroanalytical Chemistry 519 (2002) 101–110
 ---
+<style scoped>
+blockquote {
+    font-size: 12px
+}
+ol {
+    font-size: 20px
+}
+</style>
 # CO<sub>2</sub> reduction to Ethyne pathway
 
 ![bg right contain](../Ethylene.jpg)
