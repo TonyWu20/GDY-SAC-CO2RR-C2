@@ -12,25 +12,48 @@ fn parse_adsorbate() {
     println!("{}", cwd);
     let ads_table = AdsTab::load_table("ethane_ch2.yaml").unwrap();
     ads_table.adsorbates().unwrap().iter().for_each(|ads_info| {
-        let ads = AdsModel::<MsiModel, CH2Pathway>::from(ads_info);
-        println!("{:#?}", ads);
+        match ads_info.coord_atom_ids().len() {
+            1 => {
+                let ads = AdsModel::<MsiModel, CH2Pathway, 1>::from(ads_info);
+                println!("{:#?}", ads);
+            }
+            2 => {
+                let ads = AdsModel::<MsiModel, CH2Pathway, 2>::from(ads_info);
+                println!("{:#?}", ads);
+            }
+            _ => {}
+        }
     });
     let co_ads_table = AdsTab::load_table("ethane_co_dimer.yaml").unwrap();
     co_ads_table
         .adsorbates()
         .unwrap()
         .iter()
-        .for_each(|ads_info| {
-            let ads: AdsModel<MsiModel, COPathway> = AdsModel::from(ads_info);
-            println!("{:#?}", ads);
+        .for_each(|ads_info| match ads_info.coord_atom_ids().len() {
+            1 => {
+                let ads = AdsModel::<MsiModel, COPathway, 1>::from(ads_info);
+                println!("{:#?}", ads);
+            }
+            2 => {
+                let ads = AdsModel::<MsiModel, COPathway, 2>::from(ads_info);
+                println!("{:#?}", ads);
+            }
+            _ => {}
         });
     let water_ads_table = AdsTab::load_table("water.yaml").unwrap();
     water_ads_table
         .adsorbates()
         .unwrap()
         .iter()
-        .for_each(|ads_info| {
-            let ads: AdsModel<MsiModel, Water> = AdsModel::from(ads_info);
-            println!("{:#?}", ads);
-        })
+        .for_each(|ads_info| match ads_info.coord_atom_ids().len() {
+            1 => {
+                let ads = AdsModel::<MsiModel, Water, 1>::from(ads_info);
+                println!("{:#?}", ads);
+            }
+            2 => {
+                let ads = AdsModel::<MsiModel, Water, 2>::from(ads_info);
+                println!("{:#?}", ads);
+            }
+            _ => {}
+        });
 }
