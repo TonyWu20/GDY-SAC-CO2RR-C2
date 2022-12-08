@@ -43,3 +43,8 @@ The `CH` dimerization instead of `CH2` dimerization could be a potential way to 
 1. Add the adsorbates related to pathway to ethylene, and their corresponding alternatives for ethyne formation.
 1. Based on #1, figure out the adsorption strength and energy profile, and discuss the reaction preference of the pathways
 
+---
+# Notes
+1. Consider more possible adsorption configurations: e.g. CO bonding with O
+2. Study how to batch submit jobs on the server.
+3. Li Yadong, SAC synthesize ethane

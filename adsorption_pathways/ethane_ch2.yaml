@@ -1,4 +1,4 @@
-directory: ethane_pathway/adsorbates/CH2_coupling
+directory: adsorption_pathways/adsorbates/CH2_coupling
 Adsorbates:
   - name: COOH
     coordAtomIds: [1]

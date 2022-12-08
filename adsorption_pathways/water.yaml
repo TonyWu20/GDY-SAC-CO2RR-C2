@@ -1,4 +1,4 @@
-directory: water_pathway/adsorbates
+directory: adsorption_pathways/adsorbates
 Adsorbates:
   - name: H
     coordAtomIds: [1]

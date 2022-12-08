@@ -1,4 +1,4 @@
-directory: ethane_pathway/adsorbates/CO_dimer
+directory: adsorption_pathways/adsorbates/CO_dimer
 Adsorbates:
   - name: CC
     coordAtomIds: [1,2]
