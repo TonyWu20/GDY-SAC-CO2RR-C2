@@ -31,50 +31,56 @@ use adsorption_pathways::{AdsModel, CH2Pathway, COPathway, Pathway, Water};
 
 const CWD: &str = env!("CARGO_MANIFEST_DIR");
 
+/// Build the `AdsParams`
+/// # Arguments:
+/// - `gdy_lattice`: `&GDYLattice<T>` - reference to the host lattice,
+/// supply the adsorbate direction vector.
+/// - `ads_info`: `&'a AdsInfo` - reference to the adsorbate info object.
+/// The lifetime of the returned `AdsParams` is bound to the passed `&AdsInfo`
+/// - `target_site_ids`: `&[u32]` - slice, contains one or more atom ids. Used
+/// to compute the adsorbate direction vector.
+/// # To-do:
+/// We need to handle cases where the `AdsInfo` attributes are none but the `AdsParam`
+/// requires as the mandatory fields. This should be fixed in the crate
+/// `castep-model-generator-backend`
 fn build_ads_param<'a, T>(
     gdy_latttice: &GDYLattice<T>,
-    info: &'a AdsInfo,
+    ads_info: &'a AdsInfo,
     target_site_ids: &[u32],
 ) -> AdsParams<'a>
 where
     T: ModelInfo,
 {
-    let plane_angle = if let Some(angle) = info.plane_angle() {
-        angle
+    let coord_nums = ads_info.coord_atom_ids().len();
+    let ads_direction = if ads_info.atom_nums() == 1 {
+        None
+    } else if coord_nums == 1 {
+        Some(gdy_latttice.lattice().get_vector_ab(41, 42).unwrap())
     } else {
-        0.0
-    };
-    let coord_angle = if let Some(angle) = info.stem_angle_at_coord() {
-        angle
-    } else {
-        0.0
-    };
-    let plane_atom_ids = if let Some(ids) = info.plane_atom_ids() {
-        ids.as_slice()
-    } else {
-        &[1]
-    };
-    let coord_nums = info.coord_atom_ids().len();
-    let ads_direction = if coord_nums == 1 {
-        gdy_latttice.lattice().get_vector_ab(41, 42).unwrap()
-    } else {
-        gdy_latttice
-            .lattice()
-            .get_vector_ab(target_site_ids[0], target_site_ids[1])
-            .unwrap()
+        Some(
+            gdy_latttice
+                .lattice()
+                .get_vector_ab(target_site_ids[0], target_site_ids[1])
+                .unwrap(),
+        )
     };
     AdsParamsBuilder::<No, No, No, No>::new()
-        .with_ads_direction(&ads_direction)
-        .with_plane_angle(plane_angle)
-        .with_stem_coord_angle(coord_angle)
+        .with_ads_direction(ads_direction)
+        .with_plane_angle(ads_info.plane_angle())
+        .with_stem_coord_angle(ads_info.stem_angle_at_coord().unwrap())
         .with_bond_length(1.4)
-        .with_stem_atom_ids(info.stem_atom_ids())
-        .with_coord_atom_ids(info.coord_atom_ids())
-        .with_plane_atom_ids(plane_atom_ids)
+        .with_stem_atom_ids(ads_info.stem_atom_ids())
+        .with_coord_atom_ids(ads_info.coord_atom_ids())
+        .with_plane_atom_ids(ads_info.plane_atom_ids())
         .finish()
 }
 
-fn adsorption_naming<P: Pathway>(ads: &AdsModel<MsiModel, P>, target_site_ids: &[u32]) -> String {
+/// Format the adsorption model name
+/// It is `{lattice_name}_{ads_name}_{site_information}`
+fn adsorption_naming<P: Pathway, const N: usize>(
+    ads: &AdsModel<MsiModel, P, N>,
+    target_site_ids: &[u32],
+) -> String {
     let ads_name = ads.ads_info().name();
     let site_names: Vec<String> = target_site_ids
         .iter()
@@ -91,28 +97,112 @@ fn adsorption_naming<P: Pathway>(ads: &AdsModel<MsiModel, P>, target_site_ids: &
     format!("_{ads_name}_{site_name_suffix}")
 }
 
-fn create_adsorption_at_site<P: Pathway>(
+/// Iteration level: single lattice, single adsorbate, single coord case
+fn create_adsorption_at_site<P: Pathway, const N: usize>(
     gdy_lat: &GDYLattice<MsiModel>,
-    ads: &AdsModel<MsiModel, P>,
-    target_site_ids: &[u32],
+    ads: &AdsModel<MsiModel, P, N>,
+    coord_site_case: &[u32],
 ) -> GDYLattice<CellModel> {
     let builder = AdsorptionBuilder::new(gdy_lat.lattice().to_owned());
     // Clone the `LatticeModel<MsiModel>` in the adsorbate.
     let ads_lattice = ads.lattice_model().to_owned();
-    let ads_param = build_ads_param(gdy_lat, ads.ads_info(), target_site_ids);
+    let ads_param = build_ads_param(gdy_lat, ads.ads_info(), coord_site_case);
     // Builder actions
     let built_lattice = builder
         .add_adsorbate(ads_lattice)
-        .with_location_at_sites(target_site_ids)
+        .with_location_at_sites(coord_site_case)
         .with_ads_params(ads_param)
         .init_ads(ads.ads_info().upper_atom_id())
         .place_adsorbate()
         .build_adsorbed_lattice();
+    // Format the as-adsorbed model name
     let mut lat_name: String = gdy_lat.lattice_name().to_string();
-    lat_name.push_str(&adsorption_naming(ads, target_site_ids));
+    lat_name.push_str(&adsorption_naming(ads, coord_site_case));
     GDYLattice::new(built_lattice.into(), lat_name)
 }
 
+/// Iteration level: single lattice, single adsorbate, all coord cases on the lattice
+/// ---iter_over_sites
+/// ---|
+/// --------->create_adsorption_at_site
+trait IterOverSites<P: Pathway, const N: usize> {
+    fn iter_over_sites(
+        gdy_lat: &GDYLattice<MsiModel>,
+        adsorbate: &AdsModel<MsiModel, P, N>,
+    ) -> Vec<GDYLattice<CellModel>>;
+}
+
+/// Trait to implement placing two singly coord adsorbates in
+/// the neighboring positions.
+/// # Trait bound:
+/// Super trait: `IterOverSites<P, 1>`
+trait DoubleSingleCoord<P: Pathway>: IterOverSites<P, 1> {
+    fn iter_neighbouring_sites(
+        gdy_lat: &GDYLattice<MsiModel>,
+        adsorbate: &AdsModel<MsiModel, P, 1>,
+    ) -> Vec<GDYLattice<CellModel>>;
+}
+
+/// Unit struct to implement trait `IterOverSites` to mimick overloading
+struct SitesIterator<const COORD_NUMS: usize>;
+impl<P: Pathway> IterOverSites<P, 1> for SitesIterator<1> {
+    fn iter_over_sites(
+        gdy_lat: &GDYLattice<MsiModel>,
+        adsorbate: &AdsModel<MsiModel, P, 1>,
+    ) -> Vec<GDYLattice<CellModel>> {
+        GDY_SINGLE_CASES
+            .par_iter()
+            .map(|site| create_adsorption_at_site(gdy_lat, adsorbate, &[*site]))
+            .collect()
+    }
+}
+
+impl<P: Pathway> DoubleSingleCoord<P> for SitesIterator<1> {
+    fn iter_neighbouring_sites(
+        gdy_lat: &GDYLattice<MsiModel>,
+        adsorbate: &AdsModel<MsiModel, P, 1>,
+    ) -> Vec<GDYLattice<CellModel>> {
+        GDY_DOUBLE_CASES
+            .par_iter()
+            .map(|[site_1, site_2]| {
+                let added_cell: GDYLattice<CellModel> =
+                    create_adsorption_at_site(gdy_lat, adsorbate, &[*site_1]);
+                let added_msi: GDYLattice<MsiModel> = added_cell.into();
+                create_adsorption_at_site(&added_msi, adsorbate, &[*site_2])
+            })
+            .collect()
+    }
+}
+
+impl<P: Pathway> IterOverSites<P, 2> for SitesIterator<2> {
+    fn iter_over_sites(
+        gdy_lat: &GDYLattice<MsiModel>,
+        adsorbate: &AdsModel<MsiModel, P, 2>,
+    ) -> Vec<GDYLattice<CellModel>> {
+        let adsorbed_lats: Vec<GDYLattice<CellModel>> = if adsorbate.ads_info().symmetric() {
+            GDY_DOUBLE_CASES
+                .par_iter()
+                .map(|sites| create_adsorption_at_site(gdy_lat, adsorbate, sites))
+                .collect()
+        } else {
+            let mut asym: Vec<GDYLattice<CellModel>> = GDY_DOUBLE_CASES
+                .par_iter()
+                .map(|sites| create_adsorption_at_site(gdy_lat, adsorbate, sites))
+                .collect();
+            let asym_reverse: Vec<GDYLattice<CellModel>> = GDY_DOUBLE_CASES
+                .par_iter()
+                .map(|[site_1, site_2]| {
+                    create_adsorption_at_site(gdy_lat, adsorbate, &[*site_2, *site_1])
+                })
+                .collect();
+            asym.extend(asym_reverse);
+            asym
+        };
+        adsorbed_lats
+    }
+}
+
+/// Final output
 fn generate_seed_file(
     gdy_cell: &GDYLattice<CellModel>,
     export_loc_str: &str,
@@ -129,6 +219,7 @@ fn generate_seed_file(
     bs_writer.write_seed_files()?;
     Ok(())
 }
+/// Copy the extension and rename to the model name.
 fn copy_smcastep_extension(writer: &SeedWriter<GeomOptParam>) -> Result<(), io::Error> {
     let dest_dir = writer.create_export_dir()?;
     let with_seed_name = format!("SMCastep_Extension_{}.xms", writer.seed_name());
@@ -140,38 +231,6 @@ fn copy_smcastep_extension(writer: &SeedWriter<GeomOptParam>) -> Result<(), io::
         )?;
     }
     Ok(())
-}
-
-fn iter_over_sites<P: Pathway>(
-    gdy_lat: &GDYLattice<MsiModel>,
-    adsorbate: &AdsModel<MsiModel, P>,
-) -> Vec<GDYLattice<CellModel>> {
-    let coord_atom_nums = adsorbate.ads_info().coord_atom_ids().len();
-    let adsorbed_lats: Vec<GDYLattice<CellModel>> = if coord_atom_nums == 1 {
-        GDY_SINGLE_CASES
-            .par_iter()
-            .map(|site| create_adsorption_at_site(gdy_lat, adsorbate, &[*site]))
-            .collect()
-    } else if adsorbate.ads_info().symmetric() {
-        GDY_DOUBLE_CASES
-            .par_iter()
-            .map(|sites| create_adsorption_at_site(gdy_lat, adsorbate, sites))
-            .collect()
-    } else {
-        let mut asym: Vec<GDYLattice<CellModel>> = GDY_DOUBLE_CASES
-            .par_iter()
-            .map(|sites| create_adsorption_at_site(gdy_lat, adsorbate, sites))
-            .collect();
-        let asym_reverse: Vec<GDYLattice<CellModel>> = GDY_DOUBLE_CASES
-            .par_iter()
-            .map(|[site_1, site_2]| {
-                create_adsorption_at_site(gdy_lat, adsorbate, &[*site_2, *site_1])
-            })
-            .collect();
-        asym.extend(asym_reverse);
-        asym
-    };
-    adsorbed_lats
 }
 
 fn iter_all_ads<'a, P>(
@@ -186,12 +245,28 @@ fn iter_all_ads<'a, P>(
         .adsorbates()
         .unwrap()
         .par_iter()
-        .map(AdsModel::<MsiModel, P>::from)
-        .for_each(|ads| {
-            iter_over_sites(gdy_lat, &ads).iter().for_each(|gdy_lat| {
-                generate_seed_file(gdy_lat, export_loc_str, potential_loc_str).unwrap()
-            })
-        })
+        .for_each(|ads_info| {
+            let coord_num = ads_info.coord_atom_ids().len();
+            match coord_num {
+                1 => {
+                    let ads = AdsModel::<MsiModel, P, 1>::from(ads_info);
+                    SitesIterator::<1>::iter_over_sites(gdy_lat, &ads)
+                        .par_iter()
+                        .for_each(|gdy_lat| {
+                            generate_seed_file(gdy_lat, export_loc_str, potential_loc_str).unwrap()
+                        })
+                }
+                2 => {
+                    let ads = AdsModel::<MsiModel, P, 2>::from(ads_info);
+                    SitesIterator::<2>::iter_over_sites(gdy_lat, &ads)
+                        .par_iter()
+                        .for_each(|gdy_lat| {
+                            generate_seed_file(gdy_lat, export_loc_str, potential_loc_str).unwrap()
+                        })
+                }
+                _ => (),
+            }
+        });
 }
 
 pub fn gen_ethane_pathway_seeds(
