@@ -2,7 +2,7 @@ directory: adsorption_pathways/adsorbates
 Adsorbates:
   - name: H
     coordAtomIds: [1]
-    stemAtomIds: [1]
+    # stemAtomIds
     # planeAtomIds
     # plane_angle
     # stem_angle_at_coord
