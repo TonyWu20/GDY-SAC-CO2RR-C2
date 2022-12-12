@@ -4,7 +4,7 @@ use castep_model_generator_backend::external_info::{adsorbate_table::AdsTab, Yam
 use crate::{
     ethane_pathway::{CH2Pathway, COPathway},
     water_pathway::Water,
-    AdsModel,
+    AdsModel, EthynePathway,
 };
 #[test]
 fn parse_adsorbate() {
@@ -56,4 +56,20 @@ fn parse_adsorbate() {
             }
             _ => {}
         });
+    let ethyne_tab = AdsTab::load_table("ethyne_path.yaml").unwrap();
+    ethyne_tab
+        .adsorbates()
+        .unwrap()
+        .iter()
+        .for_each(|ads_info| match ads_info.coord_atom_ids().len() {
+            1 => {
+                let ads = AdsModel::<MsiModel, EthynePathway, 1>::from(ads_info);
+                println!("{:#?}", ads);
+            }
+            2 => {
+                let ads = AdsModel::<MsiModel, EthynePathway, 2>::from(ads_info);
+                println!("{:#?}", ads);
+            }
+            _ => {}
+        })
 }
