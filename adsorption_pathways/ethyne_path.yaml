@@ -1,0 +1,96 @@
+directory: adsorption_pathways/adsorbates
+Adsorbates:
+  - name: C
+    coordAtomIds: [1]
+    bSym: true
+    upperAtomId: 1
+    atomNums: 1
+    pathName: ethyne
+  - name: CH
+    coordAtomIds: [1]
+    stemAtomIds: [1,2]
+    stem_angle_at_coord: 90.0
+    bSym: true
+    upperAtomId: 2
+    atomNums: 2
+    pathName: ethyne
+  - name: CHOCH
+    coordAtomIds: [2,4]
+    stemAtomIds: [2,4]
+    planeAtomIds: [1,2,4]
+    plane_angle: 90.0
+    stem_angle_at_coord: 0.0
+    bSym: false
+    upperAtomId: 3
+    atomNums: 5
+    pathName: ethyne
+  - name: CHOCH2
+    coordAtomIds: [2,4]
+    stemAtomIds: [2,4]
+    planeAtomIds: [1,2,4]
+    plane_angle: 90.0
+    stem_angle_at_coord: 0.0
+    bSym: false
+    upperAtomId: 3
+    atomNums: 6
+    pathName: ethyne
+  - name: CHOCHO
+    coordAtomIds: [3,4]
+    stemAtomIds: [1,2]
+    planeAtomIds: [1,2,3]
+    plane_angle: 90.0
+    stem_angle_at_coord: 0.0
+    bSym: true
+    upperAtomId: 5
+    atomNums: 6
+    pathName: ethyne
+  - name: CHOHCH2
+    coordAtomIds: [2,4]
+    stemAtomIds: [2,4]
+    planeAtomIds: [1,2,4]
+    plane_angle: 90.0
+    stem_angle_at_coord: 0.0
+    bSym: false
+    upperAtomId: 6
+    atomNums: 7
+    pathName: ethyne
+  - name: H2CCO_C
+    coordAtomIds: [2]
+    stemAtomIds: [1,2]
+    planeAtomIds: [1,2,5]
+    plane_angle: 90.0
+    stem_angle_at_coord: 90.0
+    bSym: true
+    upperAtomId: 4
+    atomNums: 5
+    pathName: ethyne
+  - name: HCCH2
+    coordAtomIds: [1,2]
+    stemAtomIds: [1,2]
+    planeAtomIds: [1,2,3]
+    plane_angle: 90.0
+    stem_angle_at_coord: 0.0
+    bSym: false
+    upperAtomId: 3
+    atomNums: 5
+    pathName: ethyne
+  - name: OCC_v
+    coordAtomIds: [1]
+    stemAtomIds: [1,2]
+    planeAtomIds: [1,2,3]
+    plane_angle: 0.0
+    stem_angle_at_coord: 90.0
+    bSym: true
+    upperAtomId: 3
+    atomNums: 3
+    pathName: ethyne
+  - name: OCCOH_CO
+    coordAtomIds: [1,2]
+    stemAtomIds: [1,2]
+    planeAtomIds: [1,2,4]
+    plane_angle: 90.0
+    stem_angle_at_coord: 0.0
+    bSym: false
+    upperAtomId: 3
+    atomNums: 5
+    pathName: ethyne
