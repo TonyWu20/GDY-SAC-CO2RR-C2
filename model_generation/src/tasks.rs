@@ -27,7 +27,7 @@ use glob::glob;
 use indicatif::{ParallelProgressIterator, ProgressBar};
 use rayon::prelude::*;
 
-use adsorption_pathways::{AdsModel, CH2Pathway, COPathway, Pathway, Water};
+use adsorption_pathways::{AdsModel, CH2Pathway, COPathway, EthynePathway, Pathway, Water};
 
 const CWD: &str = env!("CARGO_MANIFEST_DIR");
 
@@ -54,6 +54,8 @@ where
     let coord_nums = ads_info.coord_atom_ids().len();
     let ads_direction = if ads_info.atom_nums() == 1 {
         None
+    } else if ["CH", "CH2"].contains(&ads_info.name()) {
+        Some(gdy_latttice.lattice().get_vector_ab(41, 73).unwrap())
     } else if coord_nums == 1 {
         Some(gdy_latttice.lattice().get_vector_ab(41, 42).unwrap())
     } else {
@@ -67,7 +69,7 @@ where
     AdsParamsBuilder::<No, No, No, No>::new()
         .with_ads_direction(ads_direction)
         .with_plane_angle(ads_info.plane_angle())
-        .with_stem_coord_angle(ads_info.stem_angle_at_coord().unwrap())
+        .with_stem_coord_angle(ads_info.stem_angle_at_coord())
         .with_bond_length(1.4)
         .with_stem_atom_ids(ads_info.stem_atom_ids())
         .with_coord_atom_ids(ads_info.coord_atom_ids())
@@ -254,7 +256,15 @@ fn iter_all_ads<'a, P>(
                         .par_iter()
                         .for_each(|gdy_lat| {
                             generate_seed_file(gdy_lat, export_loc_str, potential_loc_str).unwrap()
-                        })
+                        });
+                    if ["CH", "CH2"].contains(&ads.ads_info().name()) {
+                        SitesIterator::<1>::iter_neighbouring_sites(gdy_lat, &ads)
+                            .par_iter()
+                            .for_each(|gdy_lat| {
+                                generate_seed_file(gdy_lat, export_loc_str, potential_loc_str)
+                                    .unwrap()
+                            })
+                    }
                 }
                 2 => {
                     let ads = AdsModel::<MsiModel, P, 2>::from(ads_info);
@@ -304,7 +314,38 @@ pub fn gen_ethane_pathway_seeds(
                 &potential_loc_str,
             );
         });
-    to_xsd_scripts("ethane_pathway_models")?;
+    to_xsd_scripts(export_loc_str)?;
+    Ok(())
+}
+
+pub fn gen_ethyne_pathway_seeds(
+    export_loc_str: &str,
+    potential_loc_str: &str,
+) -> Result<(), Box<dyn Error>> {
+    let cwd = env!("CARGO_MANIFEST_DIR");
+    let water_table_path = format!("{cwd}/../adsorption_pathways/water.yaml");
+    let water_table = AdsTab::load_table(&water_table_path)?;
+    let ethyne_table_path = format!("{cwd}/../adsorption_pathways/ethyne_path.yaml");
+    let ethyne_table = AdsTab::load_table(&ethyne_table_path)?;
+    generate_all_metal_models()
+        .unwrap()
+        .par_iter()
+        .progress()
+        .for_each(|gdy_lat| {
+            iter_all_ads::<Water>(
+                gdy_lat,
+                &water_table,
+                &format!("{}/{}", export_loc_str, "water"),
+                &potential_loc_str,
+            );
+            iter_all_ads::<EthynePathway>(
+                gdy_lat,
+                &ethyne_table,
+                &format!("{}/{}", export_loc_str, "ethyne"),
+                &potential_loc_str,
+            );
+        });
+    to_xsd_scripts(export_loc_str)?;
     Ok(())
 }
 
