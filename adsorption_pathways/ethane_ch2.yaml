@@ -13,8 +13,6 @@ Adsorbates:
   - name: CO
     coordAtomIds: [1]
     stemAtomIds: [1,2]
-    planeAtomIds: [1,2,2]
-    plane_angle: 90.0
     stem_angle_at_coord: 90.0
     bSym: false
     upperAtomId: 2
