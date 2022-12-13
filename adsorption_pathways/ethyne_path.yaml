@@ -80,6 +80,7 @@ Adsorbates:
     planeAtomIds: [1,2,3]
     plane_angle: 0.0
     stem_angle_at_coord: 90.0
+    bondLength: 1.0
     bSym: true
     upperAtomId: 3
     atomNums: 3
