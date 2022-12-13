@@ -55,7 +55,7 @@ Adsorbates:
     atomNums: 7
     pathName: ethyne
   - name: H2CCO_C
-    coordAtomIds: [2]
+    coordAtomIds: [1]
     stemAtomIds: [1,2]
     planeAtomIds: [1,2,5]
     plane_angle: 90.0
