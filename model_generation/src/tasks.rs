@@ -66,11 +66,16 @@ where
                 .unwrap(),
         )
     };
+    let bond_length = if let Some(value) = ads_info.bond_length() {
+        value
+    } else {
+        1.4
+    };
     AdsParamsBuilder::<No, No, No, No>::new()
         .with_ads_direction(ads_direction)
         .with_plane_angle(ads_info.plane_angle())
         .with_stem_coord_angle(ads_info.stem_angle_at_coord())
-        .with_bond_length(1.4)
+        .with_bond_length(bond_length)
         .with_stem_atom_ids(ads_info.stem_atom_ids())
         .with_coord_atom_ids(ads_info.coord_atom_ids())
         .with_plane_atom_ids(ads_info.plane_atom_ids())
