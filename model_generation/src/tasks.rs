@@ -291,10 +291,8 @@ pub fn gen_ethane_pathway_seeds(
     let cwd = env!("CARGO_MANIFEST_DIR");
     let ch2_table_path = format!("{cwd}/../adsorption_pathways/ethane_ch2.yaml");
     let co_table_path = format!("{cwd}/../adsorption_pathways/ethane_co_dimer.yaml");
-    let water_table_path = format!("{cwd}/../adsorption_pathways/water.yaml");
     let ch2_table = AdsTab::load_table(&ch2_table_path)?;
     let co_table = AdsTab::load_table(&co_table_path)?;
-    let water_table = AdsTab::load_table(&water_table_path)?;
     generate_all_metal_models()
         .unwrap()
         .par_iter()
@@ -313,7 +311,8 @@ pub fn gen_ethane_pathway_seeds(
                 &potential_loc_str,
             );
         });
-    to_xsd_scripts(export_loc_str)?;
+    let relative_dest = export_loc_str.split("/").last().unwrap();
+    to_xsd_scripts(relative_dest)?;
     Ok(())
 }
 
@@ -344,7 +343,8 @@ pub fn gen_ethyne_pathway_seeds(
                 &potential_loc_str,
             );
         });
-    to_xsd_scripts(export_loc_str)?;
+    let relative_dest = export_loc_str.split("/").last().unwrap();
+    to_xsd_scripts(relative_dest)?;
     Ok(())
 }
 
