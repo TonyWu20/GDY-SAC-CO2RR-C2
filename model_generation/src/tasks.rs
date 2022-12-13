@@ -312,12 +312,6 @@ pub fn gen_ethane_pathway_seeds(
                 &format!("{}/{}", export_loc_str, "CO_dimer"),
                 &potential_loc_str,
             );
-            iter_all_ads::<Water>(
-                gdy_lat,
-                &water_table,
-                &format!("{}/{}", export_loc_str, "water"),
-                &potential_loc_str,
-            );
         });
     to_xsd_scripts(export_loc_str)?;
     Ok(())
