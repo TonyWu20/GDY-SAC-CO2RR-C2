@@ -77,8 +77,12 @@ fn main() -> Result<(), Box<dyn Error>> {
                 Pathway::Ethyne => gen_ethyne_pathway_seeds(&target_dir_path, &potential_loc_path)?,
             },
             Mode::Reorg => reorganize_folders(&target_dir_path)?,
-            _ => {
+            Mode::Post => {
+                post_copy_potentials(&target_dir_path, &potential_loc_path)?;
+            }
+            Mode::Full => {
                 gen_ethane_pathway_seeds(&target_dir_path, &potential_loc_path)?;
+                gen_ethyne_pathway_seeds(&target_dir_path, &potential_loc_path)?;
                 post_copy_potentials(&target_dir_path, &potential_loc_path)?;
             }
         },
