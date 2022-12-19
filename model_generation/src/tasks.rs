@@ -2,6 +2,7 @@ use std::{
     error::Error,
     fs::{self, create_dir_all, read_to_string, rename},
     io,
+    str::FromStr,
 };
 
 use basic_models::{
@@ -361,7 +362,7 @@ pub fn post_copy_potentials(
         .par_bridge()
         .try_for_each(|entry| -> Result<(), io::Error> {
             let content = read_to_string(entry.as_ref().unwrap()).unwrap();
-            let lat: LatticeModel<MsiModel> = LatticeModel::try_from(content.as_str()).unwrap();
+            let lat: LatticeModel<MsiModel> = LatticeModel::from_str(content.as_str()).unwrap();
             let cell: LatticeModel<CellModel> = lat.into();
             let filepath = entry.as_ref().unwrap().clone();
             let dir_path = filepath

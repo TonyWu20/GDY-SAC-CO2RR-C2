@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-castep-model-core = "0.1.*"
-castep_model_generator_backend = "2.*"
+castep-model-core = {path= "../../castep-model-core"}
+castep_model_generator_backend = {path= "../../castep-model-generator-backend"}
 castep-periodic-table = "0.1.*"
 nalgebra = "0.31.*"

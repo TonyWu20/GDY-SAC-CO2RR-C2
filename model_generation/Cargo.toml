@@ -8,8 +8,8 @@ edition = "2021"
 [dependencies]
 basic_models = { path = "../basic_models" }
 adsorption_pathways = { path = "../adsorption_pathways" }
-castep-model-core = "0.1.*"
-castep_model_generator_backend = "2.*"
+castep-model-core = {path= "../../castep-model-core"}
+castep_model_generator_backend = {path= "../../castep-model-generator-backend"}
 indicatif = {version="0.*", features=["rayon"]}
 castep-periodic-table = "0.1.*"
 rayon = "1.*"
