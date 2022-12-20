@@ -1,6 +1,6 @@
 [package]
 name = "model_generation"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -8,8 +8,8 @@ edition = "2021"
 [dependencies]
 basic_models = { path = "../basic_models" }
 adsorption_pathways = { path = "../adsorption_pathways" }
-castep-model-core = {path= "../../castep-model-core"}
-castep_model_generator_backend = {path= "../../castep-model-generator-backend"}
+castep-model-core = "0.2.*"
+castep_model_generator_backend = "2.1.*"
 indicatif = {version="0.*", features=["rayon"]}
 castep-periodic-table = "0.1.*"
 rayon = "1.*"
