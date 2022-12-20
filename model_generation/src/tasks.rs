@@ -1,6 +1,6 @@
 use std::{
     error::Error,
-    fs::{self, create_dir_all, read_to_string, rename},
+    fs::{self, create_dir_all, read_to_string, rename, write},
     io,
     str::FromStr,
 };
@@ -420,4 +420,18 @@ pub fn reorganize_folders(target_directory: &str) -> Result<(), io::Error> {
             })
     })?;
     Ok(bar.finish())
+}
+
+pub fn batch_submission_script(target_directory: &str) -> Result<(), io::Error> {
+    let script = r#"#!/bin/sh
+for i in `find ./ -max_depth 1 -min_depth 1 -type d`; do
+    cd $i
+    qsub "hpc.pbs.sh" && cd ..
+done"#;
+    let metal_elements = &ELEMENT_TABLE[3..];
+    metal_elements.iter().try_for_each(|elm| {
+        let metal_dir = format!("{}/{}", target_directory, elm.symbol());
+        let script_path = format!("{metal_dir}/batch_submit.sh");
+        write(script_path, script)
+    })
 }
