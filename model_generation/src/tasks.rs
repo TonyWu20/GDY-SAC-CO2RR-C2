@@ -424,10 +424,17 @@ pub fn reorganize_folders(target_directory: &str) -> Result<(), io::Error> {
 
 pub fn batch_submission_script(target_directory: &str) -> Result<(), io::Error> {
     let script = r#"#!/bin/sh
-for i in `find ./ -max_depth 1 -min_depth 1 -type d`; do
+for i in `find . -maxdepth 1 -mindepth 1 -type d`; do
     cd $i
-    qsub "hpc.pbs.sh" && cd ..
+    qsub hpc.pbs.sh && cd ..
 done"#;
+    #[cfg(debug_assertions)]
+    let script = r#"#!/bin/sh
+for i in `find . -maxdepth 1 -mindepth 1 -type d`; do
+    cd $i
+    echo "hpc.pbs.sh" && cd ..
+done"#;
+
     let metal_elements = &ELEMENT_TABLE[3..];
     metal_elements.iter().try_for_each(|elm| {
         let metal_dir = format!("{}/{}", target_directory, elm.symbol());
