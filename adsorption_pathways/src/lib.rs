@@ -1,6 +1,6 @@
 #![allow(dead_code, non_snake_case)]
 
-use std::{any::TypeId, fs, marker::PhantomData};
+use std::{any::TypeId, fs, marker::PhantomData, str::FromStr};
 
 use castep_model_core::{LatticeModel, ModelInfo, MsiModel};
 use castep_model_generator_backend::adsorbate::{AdsInfo, Adsorbate};
@@ -107,7 +107,7 @@ where
         let pathway_dir = path_type_id.source_directory().unwrap();
         let filepath = format!("{}/adsorbates/{}/{}.msi", cwd, pathway_dir, ads_name);
         let msi_content = fs::read_to_string(filepath).unwrap();
-        let msi_model = LatticeModel::try_from(msi_content.as_str()).unwrap();
+        let msi_model = LatticeModel::from_str(msi_content.as_str()).unwrap();
         Self::new(msi_model, item)
     }
 }

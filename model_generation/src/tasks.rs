@@ -1,7 +1,8 @@
 use std::{
     error::Error,
-    fs::{self, create_dir_all, read_to_string, rename},
+    fs::{self, create_dir_all, read_to_string, rename, write},
     io,
+    str::FromStr,
 };
 
 use basic_models::{
@@ -361,7 +362,7 @@ pub fn post_copy_potentials(
         .par_bridge()
         .try_for_each(|entry| -> Result<(), io::Error> {
             let content = read_to_string(entry.as_ref().unwrap()).unwrap();
-            let lat: LatticeModel<MsiModel> = LatticeModel::try_from(content.as_str()).unwrap();
+            let lat: LatticeModel<MsiModel> = LatticeModel::from_str(content.as_str()).unwrap();
             let cell: LatticeModel<CellModel> = lat.into();
             let filepath = entry.as_ref().unwrap().clone();
             let dir_path = filepath
@@ -419,4 +420,25 @@ pub fn reorganize_folders(target_directory: &str) -> Result<(), io::Error> {
             })
     })?;
     Ok(bar.finish())
+}
+
+pub fn batch_submission_script(target_directory: &str) -> Result<(), io::Error> {
+    let script = r#"#!/bin/sh
+for i in `find . -maxdepth 1 -mindepth 1 -type d`; do
+    cd $i
+    qsub hpc.pbs.sh && cd ..
+done"#;
+    #[cfg(debug_assertions)]
+    let script = r#"#!/bin/sh
+for i in `find . -maxdepth 1 -mindepth 1 -type d`; do
+    cd $i
+    echo "hpc.pbs.sh" && cd ..
+done"#;
+
+    let metal_elements = &ELEMENT_TABLE[3..];
+    metal_elements.iter().try_for_each(|elm| {
+        let metal_dir = format!("{}/{}", target_directory, elm.symbol());
+        let script_path = format!("{metal_dir}/batch_submit.sh");
+        write(script_path, script)
+    })
 }

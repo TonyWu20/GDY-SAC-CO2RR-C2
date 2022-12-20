@@ -4,7 +4,7 @@ use std::error::Error;
 
 use crate::tasks::{gen_ethane_pathway_seeds, post_copy_potentials};
 use clap::{Parser, ValueEnum};
-use tasks::{gen_ethyne_pathway_seeds, reorganize_folders};
+use tasks::{batch_submission_script, gen_ethyne_pathway_seeds, reorganize_folders};
 
 // use basic_models::gdy_model_edit::generate_all_metal_models;
 
@@ -76,7 +76,10 @@ fn main() -> Result<(), Box<dyn Error>> {
                 Pathway::Ethane => gen_ethane_pathway_seeds(&target_dir_path, &potential_loc_path)?,
                 Pathway::Ethyne => gen_ethyne_pathway_seeds(&target_dir_path, &potential_loc_path)?,
             },
-            Mode::Reorg => reorganize_folders(&target_dir_path)?,
+            Mode::Reorg => {
+                reorganize_folders(&target_dir_path)?;
+                batch_submission_script(&target_dir_path)?
+            }
             Mode::Post => {
                 post_copy_potentials(&target_dir_path, &potential_loc_path)?;
             }
