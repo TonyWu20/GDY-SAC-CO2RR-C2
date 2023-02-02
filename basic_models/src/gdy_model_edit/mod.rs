@@ -5,7 +5,7 @@ use std::{
     str::FromStr,
 };
 
-use castep_model_core::{LatticeModel, MsiModel};
+use castep_model_core::{model_type::DefaultExport, LatticeModel, MsiModel};
 
 use crate::gdy_lattice::GDYLattice;
 
@@ -65,7 +65,7 @@ pub fn write_all_metal_models() -> Result<(), Box<dyn Error>> {
             create_dir_all(&export_dir)?;
             let export_path = format!("{export_dir}/{lat_name}.msi");
             let msi_lat: LatticeModel<MsiModel> = lat.lattice().to_owned();
-            let export_text = msi_lat.msi_export();
+            let export_text = msi_lat.export();
             write(Path::new(&export_path), export_text)?;
             Ok(())
         })?;

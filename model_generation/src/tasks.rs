@@ -1,3 +1,4 @@
+use castep_model_core::{atom::visitor::VisitCollection, builder_typestate::Yes};
 use std::{
     error::Error,
     fs::{self, create_dir_all, read_to_string, rename, write},
@@ -14,7 +15,7 @@ use castep_model_core::{
     param_writer::{
         castep_param::{BandStructureParam, GeomOptParam},
         ms_aux_files::to_xsd_scripts,
-        seed_writer::SeedWriter,
+        seed_writer::{SeedWriter, SeedWriterBuilder},
     },
     CellModel, LatticeModel, ModelInfo, MsiModel,
 };
@@ -215,12 +216,18 @@ fn generate_seed_file(
     gdy_cell: &GDYLattice<CellModel>,
     export_loc_str: &str,
     potential_loc_str: &str,
+    edft: bool,
 ) -> Result<(), io::Error> {
-    let geom_seed_writer: SeedWriter<GeomOptParam> = SeedWriter::build(gdy_cell.lattice())
-        .with_seed_name(gdy_cell.lattice_name())
-        .with_export_loc(export_loc_str)
-        .with_potential_loc(potential_loc_str)
-        .build();
+    let geom_seed_writer: SeedWriterBuilder<GeomOptParam, Yes> =
+        SeedWriter::build(gdy_cell.lattice())
+            .with_seed_name(gdy_cell.lattice_name())
+            .with_export_loc(export_loc_str)
+            .with_potential_loc(potential_loc_str);
+    let geom_seed_writer = if edft {
+        geom_seed_writer.build_edft()
+    } else {
+        geom_seed_writer.build()
+    };
     geom_seed_writer.write_seed_files()?;
     copy_smcastep_extension(&geom_seed_writer)?;
     let bs_writer: SeedWriter<BandStructureParam> = geom_seed_writer.into();
@@ -246,6 +253,7 @@ fn iter_all_ads<'a, P>(
     ads_tab: &'a AdsTab,
     export_loc_str: &'a str,
     potential_loc_str: &'a str,
+    edft: bool,
 ) where
     P: Pathway + 'static,
 {
@@ -261,13 +269,14 @@ fn iter_all_ads<'a, P>(
                     SitesIterator::<1>::iter_over_sites(gdy_lat, &ads)
                         .par_iter()
                         .for_each(|gdy_lat| {
-                            generate_seed_file(gdy_lat, export_loc_str, potential_loc_str).unwrap()
+                            generate_seed_file(gdy_lat, export_loc_str, potential_loc_str, edft)
+                                .unwrap()
                         });
                     if ["CH", "CH2"].contains(&ads.ads_info().name()) {
                         SitesIterator::<1>::iter_neighbouring_sites(gdy_lat, &ads)
                             .par_iter()
                             .for_each(|gdy_lat| {
-                                generate_seed_file(gdy_lat, export_loc_str, potential_loc_str)
+                                generate_seed_file(gdy_lat, export_loc_str, potential_loc_str, edft)
                                     .unwrap()
                             })
                     }
@@ -277,7 +286,8 @@ fn iter_all_ads<'a, P>(
                     SitesIterator::<2>::iter_over_sites(gdy_lat, &ads)
                         .par_iter()
                         .for_each(|gdy_lat| {
-                            generate_seed_file(gdy_lat, export_loc_str, potential_loc_str).unwrap()
+                            generate_seed_file(gdy_lat, export_loc_str, potential_loc_str, edft)
+                                .unwrap()
                         })
                 }
                 _ => (),
@@ -288,6 +298,7 @@ fn iter_all_ads<'a, P>(
 pub fn gen_ethane_pathway_seeds(
     export_loc_str: &str,
     potential_loc_str: &str,
+    edft: bool,
 ) -> Result<(), Box<dyn Error>> {
     let cwd = env!("CARGO_MANIFEST_DIR");
     let ch2_table_path = format!("{cwd}/../adsorption_pathways/ethane_ch2.yaml");
@@ -299,17 +310,30 @@ pub fn gen_ethane_pathway_seeds(
         .par_iter()
         .progress()
         .for_each(|gdy_lat| {
+            let metal_atomic_number = gdy_lat
+                .lattice()
+                .view_atom_by_id(gdy_lat.metal_site())
+                .unwrap()
+                .atomic_number()
+                .to_owned();
+            let use_edft = if (57..=71).contains(&metal_atomic_number) {
+                edft
+            } else {
+                false
+            };
             iter_all_ads::<CH2Pathway>(
                 gdy_lat,
                 &ch2_table,
                 &format!("{}/{}", export_loc_str, "CH2_coupling"),
                 &potential_loc_str,
+                use_edft,
             );
             iter_all_ads::<COPathway>(
                 gdy_lat,
                 &co_table,
                 &format!("{}/{}", export_loc_str, "CO_dimer"),
                 &potential_loc_str,
+                use_edft,
             );
         });
     let relative_dest = export_loc_str.split("/").last().unwrap();
@@ -320,6 +344,7 @@ pub fn gen_ethane_pathway_seeds(
 pub fn gen_ethyne_pathway_seeds(
     export_loc_str: &str,
     potential_loc_str: &str,
+    edft: bool,
 ) -> Result<(), Box<dyn Error>> {
     let cwd = env!("CARGO_MANIFEST_DIR");
     let water_table_path = format!("{cwd}/../adsorption_pathways/water.yaml");
@@ -331,17 +356,30 @@ pub fn gen_ethyne_pathway_seeds(
         .par_iter()
         .progress()
         .for_each(|gdy_lat| {
+            let metal_atomic_number = gdy_lat
+                .lattice()
+                .view_atom_by_id(gdy_lat.metal_site())
+                .unwrap()
+                .atomic_number()
+                .to_owned();
+            let use_edft = if (57..=71).contains(&metal_atomic_number) {
+                edft
+            } else {
+                false
+            };
             iter_all_ads::<Water>(
                 gdy_lat,
                 &water_table,
                 &format!("{}/{}", export_loc_str, "water"),
                 &potential_loc_str,
+                use_edft,
             );
             iter_all_ads::<EthynePathway>(
                 gdy_lat,
                 &ethyne_table,
                 &format!("{}/{}", export_loc_str, "ethyne"),
                 &potential_loc_str,
+                use_edft,
             );
         });
     let relative_dest = export_loc_str.split("/").last().unwrap();
