@@ -10,6 +10,7 @@ use basic_models::{
     gdy_model_edit::generate_all_metal_models,
 };
 use castep_model_core::{
+    atom::visitor::VisitCollection,
     builder_typestate::No,
     param_writer::{
         castep_param::{BandStructureParam, GeomOptParam},
@@ -322,10 +323,32 @@ pub fn gen_ethyne_pathway_seeds(
     potential_loc_str: &str,
 ) -> Result<(), Box<dyn Error>> {
     let cwd = env!("CARGO_MANIFEST_DIR");
-    let water_table_path = format!("{cwd}/../adsorption_pathways/water.yaml");
-    let water_table = AdsTab::load_table(&water_table_path)?;
     let ethyne_table_path = format!("{cwd}/../adsorption_pathways/ethyne_path.yaml");
     let ethyne_table = AdsTab::load_table(&ethyne_table_path)?;
+    generate_all_metal_models()
+        .unwrap()
+        .par_iter()
+        .progress()
+        .for_each(|gdy_lat| {
+            iter_all_ads::<EthynePathway>(
+                gdy_lat,
+                &ethyne_table,
+                &format!("{}/{}", export_loc_str, "ethyne"),
+                &potential_loc_str,
+            );
+        });
+    let relative_dest = export_loc_str.split("/").last().unwrap();
+    to_xsd_scripts(relative_dest)?;
+    Ok(())
+}
+
+pub fn water_pathway_seeds(
+    export_loc_str: &str,
+    potential_loc_str: &str,
+) -> Result<(), Box<dyn Error>> {
+    let cwd = env!("CARGO_MANIFEST_DIR");
+    let water_table_path = format!("{cwd}/../adsorption_pathways/water.yaml");
+    let water_table = AdsTab::load_table(&water_table_path)?;
     generate_all_metal_models()
         .unwrap()
         .par_iter()
@@ -337,16 +360,9 @@ pub fn gen_ethyne_pathway_seeds(
                 &format!("{}/{}", export_loc_str, "water"),
                 &potential_loc_str,
             );
-            iter_all_ads::<EthynePathway>(
-                gdy_lat,
-                &ethyne_table,
-                &format!("{}/{}", export_loc_str, "ethyne"),
-                &potential_loc_str,
-            );
         });
     let relative_dest = export_loc_str.split("/").last().unwrap();
-    to_xsd_scripts(relative_dest)?;
-    Ok(())
+    to_xsd_scripts(relative_dest)
 }
 
 pub fn post_copy_potentials(
@@ -429,11 +445,14 @@ for i in `find . -maxdepth 1 -mindepth 1 -type d`; do
     qsub hpc.pbs.sh && cd ..
 done"#;
     #[cfg(debug_assertions)]
-    let script = r#"#!/bin/sh
+    {
+        let script = r#"#!/bin/sh
 for i in `find . -maxdepth 1 -mindepth 1 -type d`; do
     cd $i
     echo "hpc.pbs.sh" && cd ..
 done"#;
+        println!("{}", script)
+    }
 
     let metal_elements = &ELEMENT_TABLE[3..];
     metal_elements.iter().try_for_each(|elm| {

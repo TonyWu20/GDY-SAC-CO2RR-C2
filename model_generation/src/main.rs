@@ -4,7 +4,9 @@ use std::error::Error;
 
 use crate::tasks::{gen_ethane_pathway_seeds, post_copy_potentials};
 use clap::{Parser, ValueEnum};
-use tasks::{batch_submission_script, gen_ethyne_pathway_seeds, reorganize_folders};
+use tasks::{
+    batch_submission_script, gen_ethyne_pathway_seeds, reorganize_folders, water_pathway_seeds,
+};
 
 // use basic_models::gdy_model_edit::generate_all_metal_models;
 
@@ -28,6 +30,7 @@ struct Args {
 enum Pathway {
     Ethane,
     Ethyne,
+    Water,
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
@@ -51,6 +54,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let pathway_string = match pathway {
         Pathway::Ethane => "ethane_pathway_models",
         Pathway::Ethyne => "ethyne_pathway_models",
+        Pathway::Water => "water_pathway_models",
     };
     // generate_all_metal_models()?;
     let target_dir = cli.dir.as_ref();
@@ -75,6 +79,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             Mode::Fast => match pathway {
                 Pathway::Ethane => gen_ethane_pathway_seeds(&target_dir_path, &potential_loc_path)?,
                 Pathway::Ethyne => gen_ethyne_pathway_seeds(&target_dir_path, &potential_loc_path)?,
+                Pathway::Water => water_pathway_seeds(&target_dir_path, &potential_loc_path)?,
             },
             Mode::Reorg => {
                 reorganize_folders(&target_dir_path)?;
@@ -86,12 +91,14 @@ fn main() -> Result<(), Box<dyn Error>> {
             Mode::Full => {
                 gen_ethane_pathway_seeds(&target_dir_path, &potential_loc_path)?;
                 gen_ethyne_pathway_seeds(&target_dir_path, &potential_loc_path)?;
+                water_pathway_seeds(&target_dir_path, &potential_loc_path)?;
                 post_copy_potentials(&target_dir_path, &potential_loc_path)?;
             }
         },
         None => match pathway {
             Pathway::Ethane => gen_ethane_pathway_seeds(&target_dir_path, &potential_loc_path)?,
             Pathway::Ethyne => gen_ethyne_pathway_seeds(&target_dir_path, &potential_loc_path)?,
+            Pathway::Water => water_pathway_seeds(&target_dir_path, &potential_loc_path)?,
         },
     }
     Ok(())
