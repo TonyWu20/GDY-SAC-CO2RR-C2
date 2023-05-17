@@ -24,6 +24,8 @@ struct Args {
     potentials_loc: Option<String>,
     #[arg(short, long)]
     mode: Option<Mode>,
+    #[arg(long)]
+    edft: Option<bool>,
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum, Debug)]
@@ -68,6 +70,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         None => format!("{}/../Potentials", cwd),
     };
     let mode = cli.mode.as_ref();
+    let edft = if let Some(true) = cli.edft {
+        true
+    } else {
+        false
+    };
     match mode {
         Some(m) => match m {
             Mode::Debug => {
@@ -77,9 +84,13 @@ fn main() -> Result<(), Box<dyn Error>> {
                 println!("{}", potential_loc_path);
             }
             Mode::Fast => match pathway {
-                Pathway::Ethane => gen_ethane_pathway_seeds(&target_dir_path, &potential_loc_path)?,
-                Pathway::Ethyne => gen_ethyne_pathway_seeds(&target_dir_path, &potential_loc_path)?,
-                Pathway::Water => water_pathway_seeds(&target_dir_path, &potential_loc_path)?,
+                Pathway::Ethane => {
+                    gen_ethane_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?
+                }
+                Pathway::Ethyne => {
+                    gen_ethyne_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?
+                }
+                Pathway::Water => water_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?,
             },
             Mode::Reorg => {
                 reorganize_folders(&target_dir_path)?;
@@ -89,16 +100,20 @@ fn main() -> Result<(), Box<dyn Error>> {
                 post_copy_potentials(&target_dir_path, &potential_loc_path)?;
             }
             Mode::Full => {
-                gen_ethane_pathway_seeds(&target_dir_path, &potential_loc_path)?;
-                gen_ethyne_pathway_seeds(&target_dir_path, &potential_loc_path)?;
-                water_pathway_seeds(&target_dir_path, &potential_loc_path)?;
+                gen_ethane_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?;
+                gen_ethyne_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?;
+                water_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?;
                 post_copy_potentials(&target_dir_path, &potential_loc_path)?;
             }
         },
         None => match pathway {
-            Pathway::Ethane => gen_ethane_pathway_seeds(&target_dir_path, &potential_loc_path)?,
-            Pathway::Ethyne => gen_ethyne_pathway_seeds(&target_dir_path, &potential_loc_path)?,
-            Pathway::Water => water_pathway_seeds(&target_dir_path, &potential_loc_path)?,
+            Pathway::Ethane => {
+                gen_ethane_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?
+            }
+            Pathway::Ethyne => {
+                gen_ethyne_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?
+            }
+            Pathway::Water => water_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?,
         },
     }
     Ok(())
