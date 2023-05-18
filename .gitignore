@@ -14,10 +14,17 @@ Cargo.lock
 
 /target
 gdy_sac_models
-ethane_pathway_models
 *.pl
 *.pl.out
 *.htm
 
 # macOS
 .DS_Store
+
+# local resources
+/Potentials
+
+# generated contents
+ethane_pathway_models
+ethyne_pathway_models
+water_pathway_models
