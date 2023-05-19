@@ -382,7 +382,7 @@ pub fn gen_ethyne_pathway_seeds(
 pub fn water_pathway_seeds(
     export_loc_str: &str,
     potential_loc_str: &str,
-    use_edft: bool,
+    edft: bool,
 ) -> Result<(), Box<dyn Error>> {
     let cwd = env!("CARGO_MANIFEST_DIR");
     let water_table_path = format!("{cwd}/../adsorption_pathways/water.yaml");
@@ -398,6 +398,11 @@ pub fn water_pathway_seeds(
                 .unwrap()
                 .atomic_number()
                 .to_owned();
+            let use_edft = if (57..=71).contains(&metal_atomic_number) {
+                edft
+            } else {
+                false
+            };
             iter_all_ads::<Water>(
                 gdy_lat,
                 &water_table,
@@ -480,7 +485,10 @@ pub fn reorganize_folders(target_directory: &str) -> Result<(), io::Error> {
                 Ok(())
             })
     })?;
-    Ok(bar.finish())
+    bar.finish();
+    let relative_dest = target_directory.split("/").last().unwrap();
+    to_xsd_scripts(relative_dest).unwrap();
+    Ok(())
 }
 
 pub fn batch_submission_script(target_directory: &str) -> Result<(), io::Error> {
