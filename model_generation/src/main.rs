@@ -1,6 +1,6 @@
 #![allow(non_snake_case)]
 
-use std::error::Error;
+use std::{error::Error, path::Path, process::Command};
 
 use crate::tasks::{gen_ethane_pathway_seeds, post_copy_potentials};
 use clap::{Parser, ValueEnum};
@@ -14,7 +14,7 @@ mod tasks;
 #[command(author,version,about, long_about = None)]
 struct Args {
     #[arg(short, long)]
-    pathway: Pathway,
+    pathway: Option<Pathway>,
     // Target directory
     #[arg(short, long)]
     dir: Option<String>,
@@ -44,12 +44,18 @@ enum Mode {
     Reorg,
     /// Debug
     Debug,
+    /// Clean the generated folder
+    Clean,
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
     let cli = Args::parse();
     let cwd = env!("CARGO_MANIFEST_DIR");
-    let pathway = cli.pathway;
+    let pathway = if let Some(p) = cli.pathway {
+        p
+    } else {
+        Pathway::Ethane
+    };
     let pathway_string = match pathway {
         Pathway::Ethane => "ethane_pathway_models",
         Pathway::Ethyne => "ethyne_pathway_models",
@@ -66,11 +72,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         None => format!("{}/../Potentials", cwd),
     };
     let mode = cli.mode.as_ref();
-    let edft = if let Some(true) = cli.edft {
-        true
-    } else {
-        false
-    };
+    let edft = cli.edft.unwrap_or(false);
     match mode {
         Some(m) => match m {
             Mode::Debug => {
@@ -98,6 +100,20 @@ fn main() -> Result<(), Box<dyn Error>> {
                 gen_ethane_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?;
                 gen_ethyne_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?;
                 post_copy_potentials(&target_dir_path, &potential_loc_path)?;
+            }
+            Mode::Clean => {
+                if Path::new("ethane_pathway_models").exists() {
+                    Command::new("rm")
+                        .args(["-r", "ethane_pathway_models"])
+                        .output()
+                        .expect("Error while deleting 'ethane_pathway_models'");
+                }
+                if Path::new("ethyne_pathway_models").exists() {
+                    Command::new("rm")
+                        .args(["-r", "ethyne_pathway_models"])
+                        .output()
+                        .expect("Error while deleting 'ethyne_pathway_models'");
+                }
             }
         },
         None => match pathway {
