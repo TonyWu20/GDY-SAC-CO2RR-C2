@@ -120,6 +120,12 @@ fn main() -> Result<(), Box<dyn Error>> {
                         .output()
                         .expect("Error while deleting 'ethyne_pathway_models'");
                 }
+                if Path::new("water_pathway_models").exists() {
+                    Command::new("rm")
+                        .args(["-r", "water_pathway_models"])
+                        .output()
+                        .expect("Error while deleting 'water_pathway_models'");
+                }
             }
         },
         None => match pathway {
