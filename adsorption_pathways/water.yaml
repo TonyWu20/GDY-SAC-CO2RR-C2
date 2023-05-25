@@ -31,17 +31,17 @@ Adsorbates:
   #   atomNums: 3
   #   pathName: water
   - name: O2
-    coordAtomIds: [1, 2]
+    coordAtomIds: [1]
     stemAtomIds: [1, 2]
-    stem_angle_at_coord: 0.0
+    stem_angle_at_coord: 90.0
     bSym: true
     upperAtomId: 2
     atomNums: 2
     pathName: water
   - name: H2
-    coordAtomIds: [1, 2]
+    coordAtomIds: [1]
     stemAtomIds: [1, 2]
-    stem_angle_at_coord: 0.0
+    stem_angle_at_coord: 90.0
     bSym: true
     upperAtomId: 2
     atomNums: 2
