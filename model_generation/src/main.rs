@@ -5,7 +5,8 @@ use std::{error::Error, path::Path, process::Command};
 use crate::tasks::{gen_ethane_pathway_seeds, post_copy_potentials};
 use clap::{Parser, ValueEnum};
 use tasks::{
-    batch_submission_script, gen_ethyne_pathway_seeds, reorganize_folders, water_pathway_seeds,
+    batch_submission_script, gen_ethyne_pathway_seeds, gen_ketene_pathway_seeds,
+    gen_water_pathway_seeds, reorganize_folders,
 };
 
 // use basic_models::gdy_model_edit::generate_all_metal_models;
@@ -33,6 +34,7 @@ enum Pathway {
     Ethane,
     Ethyne,
     Water,
+    Ketene,
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
@@ -63,6 +65,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         Pathway::Ethane => "ethane_pathway_models",
         Pathway::Ethyne => "ethyne_pathway_models",
         Pathway::Water => "water_pathway_models",
+        Pathway::Ketene => "ketene_others_models",
     };
     // generate_all_metal_models()?;
     let target_dir = cli.dir.as_ref();
@@ -92,7 +95,12 @@ fn main() -> Result<(), Box<dyn Error>> {
                 Pathway::Ethyne => {
                     gen_ethyne_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?
                 }
-                Pathway::Water => water_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?,
+                Pathway::Water => {
+                    gen_water_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?
+                }
+                Pathway::Ketene => {
+                    gen_ketene_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?
+                }
             },
             Mode::Reorg => {
                 reorganize_folders(&target_dir_path)?;
@@ -135,7 +143,10 @@ fn main() -> Result<(), Box<dyn Error>> {
             Pathway::Ethyne => {
                 gen_ethyne_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?
             }
-            Pathway::Water => water_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?,
+            Pathway::Water => gen_water_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?,
+            Pathway::Ketene => {
+                gen_ketene_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?
+            }
         },
     }
     Ok(())

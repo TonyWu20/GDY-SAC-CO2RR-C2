@@ -5,3 +5,5 @@
 1. The competition product of ketene is HO-C=C-OH.
 
 The subsequent product could be CH3COO, or CH2CHO to other C2 products
+
+![pathway_1](./ketene_1.gif)

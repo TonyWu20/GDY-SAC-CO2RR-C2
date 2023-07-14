@@ -1,0 +1,52 @@
+directory: adsorption_pathways/adsorbates/ketene
+Adsorbates:
+  - name: OCCH_C
+    coordAtomIds: [1]
+    stemAtomIds: [1, 2]
+    planeAtomIds: [1, 2, 4]
+    plane_angle: 90.0
+    stem_angle_at_coord: 55.0
+    bSym: false
+    upperAtomId: 4
+    atomNums: 4
+    pathName: ketene_others
+  - name: OCCH_CC
+    coordAtomIds: [1, 2]
+    stemAtomIds: [1, 2]
+    planeAtomIds: [1, 2, 3]
+    plane_angle: 90.0
+    stem_angle_at_coord: 0.0
+    bSym: false
+    upperAtomId: 3
+    atomNums: 4
+    pathName: ketene_others
+  - name: CH3OCH3
+    coordAtomIds: [1, 6]
+    stemAtomIds: [1, 6]
+    planeAtomIds: [1, 5, 6]
+    plane_angle: 90.0
+    stem_angle_at_coord: 0.0
+    bSym: true
+    upperAtomId: 5
+    atomNums: 9
+    pathName: ketene_others
+  - name: ketene
+    coordAtomIds: [1, 2]
+    stemAtomIds: [1, 2]
+    planeAtomIds: [1, 2, 4]
+    plane_angle: 0.0
+    stem_angle_at_coord: 90.0
+    bSym: false
+    upperAtomId: 4
+    atomNums: 5
+    pathName: ketene_others
+  - name: HCOOCH3
+    coordAtomIds: [1, 4]
+    stemAtomIds: [1, 5]
+    planeAtomIds: [1, 2, 3]
+    plane_angle: 90.0
+    stem_angle_at_coord: 0.0
+    bSym: false
+    upperAtomId: 2
+    atomNums: 8
+    pathName: ketene_others

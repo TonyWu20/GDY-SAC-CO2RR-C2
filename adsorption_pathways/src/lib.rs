@@ -6,10 +6,12 @@ use castep_model_core::{LatticeModel, ModelInfo, MsiModel};
 use castep_model_generator_backend::adsorbate::{AdsInfo, Adsorbate};
 pub mod ethane_pathway;
 pub mod ethyne_pathway;
+pub mod ketene;
 pub mod water_pathway;
 
 pub use ethane_pathway::{CH2Pathway, COPathway};
 pub use ethyne_pathway::EthynePathway;
+pub use ketene::KetenePathway;
 pub use water_pathway::Water;
 
 #[cfg(test)]
@@ -25,6 +27,7 @@ pub enum PathwayId {
     CO,
     Water,
     Ethyne,
+    Ketene,
     Undefined,
 }
 
@@ -38,6 +41,8 @@ impl PathwayId {
             Self::Water
         } else if type_id == TypeId::of::<EthynePathway>() {
             Self::Ethyne
+        } else if type_id == TypeId::of::<KetenePathway>() {
+            Self::Ketene
         } else {
             Self::Undefined
         }
@@ -48,6 +53,7 @@ impl PathwayId {
             Self::CO => Some("CO_dimer"),
             Self::Water => Some("Water"),
             Self::Ethyne => Some("ethyne"),
+            Self::Ketene => Some("ketene"),
             Self::Undefined => None,
         }
     }
@@ -57,6 +63,7 @@ impl PathwayId {
             Self::CO => Some("CO_dimer"),
             Self::Water => Some("Water"),
             Self::Ethyne => Some("ethyne"),
+            Self::Ketene => Some("ketene"),
             Self::Undefined => None,
         }
     }
