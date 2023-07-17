@@ -112,7 +112,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             Mode::Full => {
                 gen_ethane_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?;
                 gen_ethyne_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?;
-                water_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?;
+                gen_water_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?;
                 post_copy_potentials(&target_dir_path, &potential_loc_path)?;
             }
             Mode::Clean => {
