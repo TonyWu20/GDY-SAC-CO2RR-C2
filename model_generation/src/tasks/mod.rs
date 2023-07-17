@@ -1,4 +1,5 @@
 use std::{
+    any::TypeId,
     error::Error,
     fs::{self, create_dir_all, read_to_string, rename, write},
     io,
@@ -30,7 +31,7 @@ use glob::glob;
 use indicatif::{ParallelProgressIterator, ProgressBar};
 use rayon::prelude::*;
 
-use adsorption_pathways::{AdsModel, Pathway};
+use adsorption_pathways::{AdsModel, Pathway, PathwayId};
 
 const CWD: &str = env!("CARGO_MANIFEST_DIR");
 
@@ -271,6 +272,7 @@ pub trait GenerateSeeds {
         let cwd = env!("CARGO_MANIFEST_DIR");
         let table_full_path = format!("{cwd}/../adsorption_pathways/{}", table_name);
         let table = AdsTab::load_table(table_full_path)?;
+        let pathway_id = PathwayId::new(TypeId::of::<Self::ThePathwayId>());
         generate_all_metal_models()
             .unwrap()
             .par_iter()
@@ -290,7 +292,7 @@ pub trait GenerateSeeds {
                 iter_all_ads::<Self::ThePathwayId>(
                     gdy_lat,
                     &table,
-                    &format!("{}/{}", export_loc_str, "CH2_coupling"),
+                    &format!("{}/{}", export_loc_str, pathway_id.target_dir().unwrap()),
                     &potential_loc_str,
                     use_edft,
                 );
