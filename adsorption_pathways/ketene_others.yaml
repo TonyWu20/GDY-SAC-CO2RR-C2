@@ -5,7 +5,7 @@ Adsorbates:
     stemAtomIds: [1, 2]
     planeAtomIds: [1, 2, 4]
     plane_angle: 90.0
-    stem_angle_at_coord: 55.0
+    stem_angle_at_coord: 65.0
     bSym: false
     upperAtomId: 4
     atomNums: 4
@@ -35,7 +35,7 @@ Adsorbates:
     stemAtomIds: [1, 2]
     planeAtomIds: [1, 2, 4]
     plane_angle: 0.0
-    stem_angle_at_coord: 90.0
+    stem_angle_at_coord: 0.0
     bSym: false
     upperAtomId: 4
     atomNums: 5
