@@ -1,6 +1,6 @@
 [package]
 name = "basic_models"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -8,5 +8,5 @@ edition = "2021"
 [dependencies]
 castep-model-core = "0.2.*"
 castep_model_generator_backend = "2.1.*"
-castep-periodic-table = "0.1.*"
-nalgebra = "0.31.*"
+castep-periodic-table = "0.2.*"
+nalgebra = "0.32.*"

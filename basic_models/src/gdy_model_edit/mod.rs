@@ -42,9 +42,7 @@ pub fn edit_metal(basic_model: &GDYLattice<MsiModel>, element: &Element) -> GDYL
 
 pub fn generate_all_metal_models() -> Result<Vec<GDYLattice<MsiModel>>, std::io::Error> {
     let base = load_base_model()?;
-    let metals = &ELEMENT_TABLE[3..];
-    #[cfg(debug_assertions)]
-    let metals = &ELEMENT_TABLE[3..4];
+    let metals = available_metals();
     Ok(metals
         .iter()
         .map(|elm: &Element| -> GDYLattice<MsiModel> { edit_metal(&base, elm) })
@@ -53,7 +51,7 @@ pub fn generate_all_metal_models() -> Result<Vec<GDYLattice<MsiModel>>, std::io:
 
 pub fn write_all_metal_models() -> Result<(), Box<dyn Error>> {
     let base = load_base_model()?;
-    let metals = &ELEMENT_TABLE[3..];
+    let metals = available_metals();
     metals
         .iter()
         .map(|elm: &Element| -> GDYLattice<MsiModel> { edit_metal(&base, elm) })
@@ -70,4 +68,22 @@ pub fn write_all_metal_models() -> Result<(), Box<dyn Error>> {
             Ok(())
         })?;
     Ok(())
+}
+
+fn available_metals() -> Vec<Element> {
+    let d3_metals = &ELEMENT_TABLE[20..30];
+    let d4_metals = &ELEMENT_TABLE[38..48];
+    let d5_metals = &ELEMENT_TABLE[56..80];
+    vec![d3_metals, d4_metals, d5_metals].concat()
+}
+
+#[cfg(test)]
+mod test {
+    use super::available_metals;
+
+    #[test]
+    fn test_metal_ranges() {
+        let metals = available_metals();
+        metals.iter().for_each(|m| println!("{}", m.symbol()))
+    }
 }

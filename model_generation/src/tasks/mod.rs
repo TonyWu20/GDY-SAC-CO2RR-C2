@@ -3,6 +3,7 @@ use std::{
     error::Error,
     fs::{self, create_dir_all, read_to_string, rename, write},
     io,
+    process::Command,
     str::FromStr,
 };
 
@@ -26,7 +27,7 @@ use castep_model_generator_backend::{
     assemble::{AdsParams, AdsParamsBuilder, AdsorptionBuilder},
     external_info::{adsorbate_table::AdsTab, YamlTable},
 };
-use castep_periodic_table::data::ELEMENT_TABLE;
+use castep_periodic_table::{data::ELEMENT_TABLE, element::Element};
 use glob::glob;
 use indicatif::{ParallelProgressIterator, ProgressBar};
 use rayon::prelude::*;
@@ -389,10 +390,21 @@ pub fn post_copy_potentials(
 }
 
 pub fn reorganize_folders(target_directory: &str) -> Result<(), io::Error> {
-    let metal_elements = &ELEMENT_TABLE[3..];
+    let metal_elements = available_metals();
     let num_seeds = glob(&format!("{}/**/SAC_GDY*opt", target_directory))
         .unwrap()
         .count();
+    let parent = glob(&format!("{}/**/SAC_GDY*opt", target_directory))
+        .unwrap()
+        .nth(0)
+        .unwrap()
+        .as_ref()
+        .unwrap()
+        .parent()
+        .unwrap()
+        .to_str()
+        .unwrap()
+        .to_string();
     let bar = ProgressBar::new(num_seeds as u64);
     metal_elements.iter().try_for_each(|elm| {
         let metal_dir = format!("{}/{}", target_directory, elm.symbol());
@@ -421,6 +433,10 @@ pub fn reorganize_folders(target_directory: &str) -> Result<(), io::Error> {
             })
     })?;
     bar.finish();
+    Command::new("rm")
+        .args(["-r", &format!("{}", parent)])
+        .output()
+        .expect(&format!("Error when deleting the {} dir", parent));
     let relative_dest = target_directory.split("/").last().unwrap();
     to_xsd_scripts(relative_dest).unwrap();
     Ok(())
@@ -441,11 +457,17 @@ for i in `find . -maxdepth 1 -mindepth 1 -type d`; do
 done"#;
         println!("{}", script)
     }
-
-    let metal_elements = &ELEMENT_TABLE[3..];
+    let metal_elements = available_metals();
     metal_elements.iter().try_for_each(|elm| {
         let metal_dir = format!("{}/{}", target_directory, elm.symbol());
         let script_path = format!("{metal_dir}/batch_submit.sh");
         write(script_path, script)
     })
+}
+
+fn available_metals() -> Vec<Element> {
+    let d3_metals = &ELEMENT_TABLE[20..30];
+    let d4_metals = &ELEMENT_TABLE[38..48];
+    let d5_metals = &ELEMENT_TABLE[56..80];
+    vec![d3_metals, d4_metals, d5_metals].concat()
 }
