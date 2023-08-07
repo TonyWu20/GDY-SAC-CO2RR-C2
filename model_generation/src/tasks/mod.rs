@@ -28,6 +28,7 @@ use castep_model_generator_backend::{
     external_info::{adsorbate_table::AdsTab, YamlTable},
 };
 use castep_periodic_table::{data::ELEMENT_TABLE, element::Element};
+use clap::ValueEnum;
 use glob::glob;
 use indicatif::{ParallelProgressIterator, ProgressBar};
 use rayon::prelude::*;
@@ -442,26 +443,31 @@ pub fn reorganize_folders(target_directory: &str) -> Result<(), io::Error> {
     Ok(())
 }
 
-pub fn batch_submission_script(target_directory: &str) -> Result<(), io::Error> {
-    let script = r#"#!/bin/sh
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum, Debug)]
+pub enum ServerScriptType {
+    PBS,
+    LSF,
+}
+pub fn batch_submission_script(
+    target_directory: &str,
+    script_type: ServerScriptType,
+) -> Result<(), io::Error> {
+    let script_type = match script_type {
+        ServerScriptType::LSF => "bsub MS70_YW_CASTEP.lsf",
+        ServerScriptType::PBS => "qsub hpc.pbs.sh",
+    };
+    let script = format!(
+        r#"#!/bin/sh
 for i in `find . -maxdepth 1 -mindepth 1 -type d`; do
     cd $i
-    qsub hpc.pbs.sh && cd ..
-done"#;
-    #[cfg(debug_assertions)]
-    {
-        let script = r#"#!/bin/sh
-for i in `find . -maxdepth 1 -mindepth 1 -type d`; do
-    cd $i
-    echo "hpc.pbs.sh" && cd ..
-done"#;
-        println!("{}", script)
-    }
+    {script_type} && cd ..
+done"#
+    );
     let metal_elements = available_metals();
     metal_elements.iter().try_for_each(|elm| {
         let metal_dir = format!("{}/{}", target_directory, elm.symbol());
         let script_path = format!("{metal_dir}/batch_submit.sh");
-        write(script_path, script)
+        write(script_path, &script)
     })
 }
 

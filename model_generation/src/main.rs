@@ -6,7 +6,7 @@ use crate::tasks::{gen_ethane_pathway_seeds, post_copy_potentials};
 use clap::{Parser, ValueEnum};
 use tasks::{
     batch_submission_script, gen_ethyne_pathway_seeds, gen_ketene_pathway_seeds,
-    gen_water_pathway_seeds, reorganize_folders,
+    gen_water_pathway_seeds, reorganize_folders, ServerScriptType,
 };
 
 // use basic_models::gdy_model_edit::generate_all_metal_models;
@@ -27,6 +27,8 @@ struct Args {
     mode: Option<Mode>,
     #[arg(long)]
     edft: Option<bool>,
+    #[arg(long)]
+    script: Option<ServerScriptType>,
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum, Debug)]
@@ -79,7 +81,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         None => format!("{}/../Potentials", cwd),
     };
     let mode = cli.mode.as_ref();
-    let edft = cli.edft.unwrap_or(false);
+    let edft = cli.edft.unwrap_or(true); // Default to use edft for rare earth
+    let script_type = cli.script.unwrap_or(ServerScriptType::PBS);
     match mode {
         Some(m) => match m {
             Mode::Debug => {
@@ -104,7 +107,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             },
             Mode::Reorg => {
                 reorganize_folders(&target_dir_path)?;
-                batch_submission_script(&target_dir_path)?
+                batch_submission_script(&target_dir_path, script_type)?
             }
             Mode::Post => {
                 post_copy_potentials(&target_dir_path, &potential_loc_path)?;
