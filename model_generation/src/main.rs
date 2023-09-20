@@ -6,7 +6,8 @@ use crate::tasks::{gen_ethane_pathway_seeds, post_copy_potentials};
 use clap::{Parser, ValueEnum};
 use tasks::{
     batch_submission_script, gen_ethyne_pathway_seeds, gen_ketene_pathway_seeds,
-    gen_water_pathway_seeds, reorganize_folders, ServerScriptType,
+    gen_oxalic_acid_seeds, gen_water_pathway_seeds, generate_seeds, reorganize_folders,
+    ServerScriptType,
 };
 
 // use basic_models::gdy_model_edit::generate_all_metal_models;
@@ -37,6 +38,7 @@ enum Pathway {
     Ethyne,
     Water,
     Ketene,
+    OxalicAcid,
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
@@ -68,6 +70,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         Pathway::Ethyne => "ethyne_pathway_models",
         Pathway::Water => "water_pathway_models",
         Pathway::Ketene => "ketene_others_models",
+        Pathway::OxalicAcid => "oxalic_acid_models",
     };
     // generate_all_metal_models()?;
     let target_dir = cli.dir.as_ref();
@@ -82,7 +85,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     };
     let mode = cli.mode.as_ref();
     let edft = cli.edft.unwrap_or(true); // Default to use edft for rare earth
-    let script_type = cli.script.unwrap_or(ServerScriptType::PBS);
+    let script_type = cli.script.unwrap_or(ServerScriptType::Pbs);
     match mode {
         Some(m) => match m {
             Mode::Debug => {
@@ -104,6 +107,9 @@ fn main() -> Result<(), Box<dyn Error>> {
                 Pathway::Ketene => {
                     gen_ketene_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?
                 }
+                Pathway::OxalicAcid => {
+                    gen_oxalic_acid_seeds(&target_dir_path, &potential_loc_path, edft)?
+                }
             },
             Mode::Reorg => {
                 reorganize_folders(&target_dir_path)?;
@@ -116,6 +122,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                 gen_ethane_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?;
                 gen_ethyne_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?;
                 gen_water_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?;
+                gen_ketene_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?;
+                gen_oxalic_acid_seeds(&target_dir_path, &potential_loc_path, edft)?;
                 post_copy_potentials(&target_dir_path, &potential_loc_path)?;
             }
             Mode::Clean => {
@@ -143,6 +151,12 @@ fn main() -> Result<(), Box<dyn Error>> {
                         .output()
                         .expect("Error while deleting 'ketene_others_models'");
                 }
+                if Path::new("oxalic_acid").exists() {
+                    Command::new("rm")
+                        .args(["-r", "oxalic_acid"])
+                        .output()
+                        .expect("Error while deleting 'oxalic_acid'");
+                }
             }
         },
         None => match pathway {
@@ -155,6 +169,9 @@ fn main() -> Result<(), Box<dyn Error>> {
             Pathway::Water => gen_water_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?,
             Pathway::Ketene => {
                 gen_ketene_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?
+            }
+            Pathway::OxalicAcid => {
+                gen_oxalic_acid_seeds(&target_dir_path, &potential_loc_path, edft)?
             }
         },
     }

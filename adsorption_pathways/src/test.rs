@@ -1,11 +1,7 @@
 use castep_model_core::MsiModel;
 use castep_model_generator_backend::external_info::{adsorbate_table::AdsTab, YamlTable};
 
-use crate::{
-    ethane_pathway::{CH2Pathway, COPathway},
-    water_pathway::Water,
-    AdsModel, EthynePathway,
-};
+use crate::AdsModel;
 #[test]
 fn parse_adsorbate() {
     let cwd = env!("CARGO_MANIFEST_DIR");
@@ -14,11 +10,13 @@ fn parse_adsorbate() {
     ads_table.adsorbates().unwrap().iter().for_each(|ads_info| {
         match ads_info.coord_atom_ids().len() {
             1 => {
-                let ads = AdsModel::<MsiModel, CH2Pathway, 1>::from(ads_info);
+                let ads =
+                    AdsModel::<MsiModel, 1>::load_model(ads_table.source_directory(), ads_info);
                 println!("{:#?}", ads);
             }
             2 => {
-                let ads = AdsModel::<MsiModel, CH2Pathway, 2>::from(ads_info);
+                let ads =
+                    AdsModel::<MsiModel, 2>::load_model(ads_table.source_directory(), ads_info);
                 println!("{:#?}", ads);
             }
             _ => {}
@@ -31,11 +29,13 @@ fn parse_adsorbate() {
         .iter()
         .for_each(|ads_info| match ads_info.coord_atom_ids().len() {
             1 => {
-                let ads = AdsModel::<MsiModel, COPathway, 1>::from(ads_info);
+                let ads =
+                    AdsModel::<MsiModel, 1>::load_model(co_ads_table.source_directory(), ads_info);
                 println!("{:#?}", ads);
             }
             2 => {
-                let ads = AdsModel::<MsiModel, COPathway, 2>::from(ads_info);
+                let ads =
+                    AdsModel::<MsiModel, 2>::load_model(co_ads_table.source_directory(), ads_info);
                 println!("{:#?}", ads);
             }
             _ => {}
@@ -47,11 +47,17 @@ fn parse_adsorbate() {
         .iter()
         .for_each(|ads_info| match ads_info.coord_atom_ids().len() {
             1 => {
-                let ads = AdsModel::<MsiModel, Water, 1>::from(ads_info);
+                let ads = AdsModel::<MsiModel, 1>::load_model(
+                    water_ads_table.source_directory(),
+                    ads_info,
+                );
                 println!("{:#?}", ads);
             }
             2 => {
-                let ads = AdsModel::<MsiModel, Water, 2>::from(ads_info);
+                let ads = AdsModel::<MsiModel, 2>::load_model(
+                    water_ads_table.source_directory(),
+                    ads_info,
+                );
                 println!("{:#?}", ads);
             }
             _ => {}
@@ -63,11 +69,13 @@ fn parse_adsorbate() {
         .iter()
         .for_each(|ads_info| match ads_info.coord_atom_ids().len() {
             1 => {
-                let ads = AdsModel::<MsiModel, EthynePathway, 1>::from(ads_info);
+                let ads =
+                    AdsModel::<MsiModel, 1>::load_model(ethyne_tab.source_directory(), ads_info);
                 println!("{:#?}", ads);
             }
             2 => {
-                let ads = AdsModel::<MsiModel, EthynePathway, 2>::from(ads_info);
+                let ads =
+                    AdsModel::<MsiModel, 2>::load_model(ethyne_tab.source_directory(), ads_info);
                 println!("{:#?}", ads);
             }
             _ => {}

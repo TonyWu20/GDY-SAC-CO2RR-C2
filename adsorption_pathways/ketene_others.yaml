@@ -1,4 +1,5 @@
-directory: adsorption_pathways/adsorbates/ketene
+source_directory: adsorbates/ketene
+target_directory: ketene_others
 Adsorbates:
   - name: OCCH_C
     coordAtomIds: [1]

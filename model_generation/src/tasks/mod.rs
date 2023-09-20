@@ -1,5 +1,4 @@
 use std::{
-    any::TypeId,
     error::Error,
     fs::{self, create_dir_all, read_to_string, rename, write},
     io,
@@ -33,18 +32,20 @@ use glob::glob;
 use indicatif::{ParallelProgressIterator, ProgressBar};
 use rayon::prelude::*;
 
-use adsorption_pathways::{AdsModel, Pathway, PathwayId};
+use adsorption_pathways::AdsModel;
 
 const CWD: &str = env!("CARGO_MANIFEST_DIR");
 
 mod ethane_task;
 mod ethyne_task;
 mod ketene_task;
+mod oxalic_acid_task;
 mod water_task;
 
 pub use ethane_task::gen_ethane_pathway_seeds;
 pub use ethyne_task::gen_ethyne_pathway_seeds;
 pub use ketene_task::gen_ketene_pathway_seeds;
+pub use oxalic_acid_task::gen_oxalic_acid_seeds;
 pub use water_task::gen_water_pathway_seeds;
 
 /// Build the `AdsParams`
@@ -100,8 +101,8 @@ where
 
 /// Format the adsorption model name
 /// It is `{lattice_name}_{ads_name}_{site_information}`
-fn adsorption_naming<P: Pathway, const N: usize>(
-    ads: &AdsModel<MsiModel, P, N>,
+fn adsorption_naming<const N: usize>(
+    ads: &AdsModel<MsiModel, N>,
     target_site_ids: &[u32],
 ) -> String {
     let ads_name = ads.ads_info().name();
@@ -121,9 +122,9 @@ fn adsorption_naming<P: Pathway, const N: usize>(
 }
 
 /// Iteration level: single lattice, single adsorbate, single coord case
-fn create_adsorption_at_site<P: Pathway, const N: usize>(
+fn create_adsorption_at_site<const N: usize>(
     gdy_lat: &GDYLattice<MsiModel>,
-    ads: &AdsModel<MsiModel, P, N>,
+    ads: &AdsModel<MsiModel, N>,
     coord_site_case: &[u32],
 ) -> GDYLattice<CellModel> {
     let builder = AdsorptionBuilder::new(gdy_lat.lattice().to_owned());
@@ -148,10 +149,10 @@ fn create_adsorption_at_site<P: Pathway, const N: usize>(
 /// ---iter_over_sites
 /// ---|
 /// --------->create_adsorption_at_site
-trait IterOverSites<P: Pathway, const N: usize> {
+trait IterOverSites<const N: usize> {
     fn iter_over_sites(
         gdy_lat: &GDYLattice<MsiModel>,
-        adsorbate: &AdsModel<MsiModel, P, N>,
+        adsorbate: &AdsModel<MsiModel, N>,
     ) -> Vec<GDYLattice<CellModel>>;
 }
 
@@ -159,19 +160,19 @@ trait IterOverSites<P: Pathway, const N: usize> {
 /// the neighboring positions.
 /// # Trait bound:
 /// Super trait: `IterOverSites<P, 1>`
-trait DoubleSingleCoord<P: Pathway>: IterOverSites<P, 1> {
+trait DoubleSingleCoord: IterOverSites<1> {
     fn iter_neighbouring_sites(
         gdy_lat: &GDYLattice<MsiModel>,
-        adsorbate: &AdsModel<MsiModel, P, 1>,
+        adsorbate: &AdsModel<MsiModel, 1>,
     ) -> Vec<GDYLattice<CellModel>>;
 }
 
 /// Unit struct to implement trait `IterOverSites` to mimick overloading
 struct SitesIterator<const COORD_NUMS: usize>;
-impl<P: Pathway> IterOverSites<P, 1> for SitesIterator<1> {
+impl IterOverSites<1> for SitesIterator<1> {
     fn iter_over_sites(
         gdy_lat: &GDYLattice<MsiModel>,
-        adsorbate: &AdsModel<MsiModel, P, 1>,
+        adsorbate: &AdsModel<MsiModel, 1>,
     ) -> Vec<GDYLattice<CellModel>> {
         GDY_SINGLE_CASES
             .par_iter()
@@ -180,10 +181,10 @@ impl<P: Pathway> IterOverSites<P, 1> for SitesIterator<1> {
     }
 }
 
-impl<P: Pathway> DoubleSingleCoord<P> for SitesIterator<1> {
+impl DoubleSingleCoord for SitesIterator<1> {
     fn iter_neighbouring_sites(
         gdy_lat: &GDYLattice<MsiModel>,
-        adsorbate: &AdsModel<MsiModel, P, 1>,
+        adsorbate: &AdsModel<MsiModel, 1>,
     ) -> Vec<GDYLattice<CellModel>> {
         GDY_DOUBLE_CASES
             .par_iter()
@@ -197,10 +198,10 @@ impl<P: Pathway> DoubleSingleCoord<P> for SitesIterator<1> {
     }
 }
 
-impl<P: Pathway> IterOverSites<P, 2> for SitesIterator<2> {
+impl IterOverSites<2> for SitesIterator<2> {
     fn iter_over_sites(
         gdy_lat: &GDYLattice<MsiModel>,
-        adsorbate: &AdsModel<MsiModel, P, 2>,
+        adsorbate: &AdsModel<MsiModel, 2>,
     ) -> Vec<GDYLattice<CellModel>> {
         let adsorbed_lats: Vec<GDYLattice<CellModel>> = if adsorbate.ads_info().symmetric() {
             GDY_DOUBLE_CASES
@@ -253,67 +254,62 @@ fn generate_seed_file(
 fn copy_smcastep_extension(writer: &SeedWriter<GeomOptParam>) -> Result<(), io::Error> {
     let dest_dir = writer.create_export_dir()?;
     let with_seed_name = format!("SMCastep_Extension_{}.xms", writer.seed_name());
-    let dest_path = dest_dir.join(&with_seed_name);
+    let dest_path = dest_dir.join(with_seed_name);
     if !dest_path.exists() {
         fs::copy(
-            &format!("{}/../resources/SMCastep_Extension.xms", CWD),
+            format!("{}/../resources/SMCastep_Extension.xms", CWD),
             dest_path,
         )?;
     }
     Ok(())
 }
 
-pub trait GenerateSeeds {
-    type ThePathwayId: 'static + Pathway;
-    fn generate_seeds<'a>(
-        export_loc_str: &'a str,
-        potential_loc_str: &'a str,
-        edft: bool,
-        table_name: &'a str,
-    ) -> Result<(), Box<dyn Error>> {
-        let cwd = env!("CARGO_MANIFEST_DIR");
-        let table_full_path = format!("{cwd}/../adsorption_pathways/{}", table_name);
-        let table = AdsTab::load_table(table_full_path)?;
-        let pathway_id = PathwayId::new(TypeId::of::<Self::ThePathwayId>());
-        generate_all_metal_models()
-            .unwrap()
-            .par_iter()
-            .progress()
-            .for_each(|gdy_lat| {
-                let metal_atomic_number = gdy_lat
-                    .lattice()
-                    .view_atom_by_id(gdy_lat.metal_site())
-                    .unwrap()
-                    .atomic_number()
-                    .to_owned();
-                let use_edft = if (57..=71).contains(&metal_atomic_number) {
-                    edft
-                } else {
-                    false
-                };
-                iter_all_ads::<Self::ThePathwayId>(
-                    gdy_lat,
-                    &table,
-                    &format!("{}/{}", export_loc_str, pathway_id.target_dir().unwrap()),
-                    &potential_loc_str,
-                    use_edft,
-                );
-            });
-        let relative_dest = export_loc_str.split("/").last().unwrap();
-        to_xsd_scripts(relative_dest)?;
-        Ok(())
-    }
+pub fn generate_seeds<'a>(
+    export_loc_str: &'a str,
+    potential_loc_str: &'a str,
+    edft: bool,
+    table_name: &'a str,
+) -> Result<(), Box<dyn Error>> {
+    let cwd = env!("CARGO_MANIFEST_DIR");
+    let table_full_path = format!("{cwd}/../adsorption_pathways/{}", table_name);
+    let table = AdsTab::load_table(table_full_path)?;
+    let target_dir = table.target_directory().unwrap().as_str();
+    generate_all_metal_models()
+        .unwrap()
+        .par_iter()
+        .progress()
+        .for_each(|gdy_lat| {
+            let metal_atomic_number = gdy_lat
+                .lattice()
+                .view_atom_by_id(gdy_lat.metal_site())
+                .unwrap()
+                .atomic_number()
+                .to_owned();
+            let use_edft = if (57..=71).contains(&metal_atomic_number) {
+                edft
+            } else {
+                false
+            };
+            iter_all_ads(
+                gdy_lat,
+                &table,
+                &format!("{}/{}", export_loc_str, target_dir),
+                potential_loc_str,
+                use_edft,
+            );
+        });
+    let relative_dest = export_loc_str.split('/').last().unwrap();
+    to_xsd_scripts(relative_dest)?;
+    Ok(())
 }
 
-fn iter_all_ads<'a, P>(
+fn iter_all_ads<'a>(
     gdy_lat: &'a GDYLattice<MsiModel>,
     ads_tab: &'a AdsTab,
     export_loc_str: &'a str,
     potential_loc_str: &'a str,
     edft: bool,
-) where
-    P: Pathway + 'static,
-{
+) {
     ads_tab
         .adsorbates()
         .unwrap()
@@ -322,7 +318,8 @@ fn iter_all_ads<'a, P>(
             let coord_num = ads_info.coord_atom_ids().len();
             match coord_num {
                 1 => {
-                    let ads = AdsModel::<MsiModel, P, 1>::from(ads_info);
+                    let ads =
+                        AdsModel::<MsiModel, 1>::load_model(ads_tab.source_directory(), ads_info);
                     SitesIterator::<1>::iter_over_sites(gdy_lat, &ads)
                         .par_iter()
                         .for_each(|gdy_lat| {
@@ -339,7 +336,8 @@ fn iter_all_ads<'a, P>(
                     }
                 }
                 2 => {
-                    let ads = AdsModel::<MsiModel, P, 2>::from(ads_info);
+                    let ads =
+                        AdsModel::<MsiModel, 2>::load_model(ads_tab.source_directory(), ads_info);
                     SitesIterator::<2>::iter_over_sites(gdy_lat, &ads)
                         .par_iter()
                         .for_each(|gdy_lat| {
@@ -361,7 +359,6 @@ pub fn post_copy_potentials(
     let bar = ProgressBar::new(num_seeds as u64);
     glob(&msi_pattern)
         .unwrap()
-        .into_iter()
         .par_bridge()
         .try_for_each(|entry| -> Result<(), io::Error> {
             let content = read_to_string(entry.as_ref().unwrap()).unwrap();
@@ -397,7 +394,7 @@ pub fn reorganize_folders(target_directory: &str) -> Result<(), io::Error> {
         .count();
     let parent = glob(&format!("{}/**/SAC_GDY*opt", target_directory))
         .unwrap()
-        .nth(0)
+        .next()
         .unwrap()
         .as_ref()
         .unwrap()
@@ -413,7 +410,6 @@ pub fn reorganize_folders(target_directory: &str) -> Result<(), io::Error> {
         create_dir_all(&metal_dir)?;
         glob(&metal_seeds_pattern)
             .unwrap()
-            .into_iter()
             .par_bridge()
             .try_for_each(|entry| -> Result<(), io::Error> {
                 let dir_path = entry.unwrap();
@@ -435,26 +431,26 @@ pub fn reorganize_folders(target_directory: &str) -> Result<(), io::Error> {
     })?;
     bar.finish();
     Command::new("rm")
-        .args(["-r", &format!("{}", parent)])
+        .args(["-r", &parent])
         .output()
-        .expect(&format!("Error when deleting the {} dir", parent));
-    let relative_dest = target_directory.split("/").last().unwrap();
+        .unwrap_or_else(|_| panic!("Error when deleting the {} dir", parent));
+    let relative_dest = target_directory.split('/').last().unwrap();
     to_xsd_scripts(relative_dest).unwrap();
     Ok(())
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum, Debug)]
 pub enum ServerScriptType {
-    PBS,
-    LSF,
+    Pbs,
+    Lsf,
 }
 pub fn batch_submission_script(
     target_directory: &str,
     script_type: ServerScriptType,
 ) -> Result<(), io::Error> {
     let script_type = match script_type {
-        ServerScriptType::LSF => "bsub MS70_YW_CASTEP.lsf",
-        ServerScriptType::PBS => "qsub hpc.pbs.sh",
+        ServerScriptType::Lsf => "bsub MS70_YW_CASTEP.lsf",
+        ServerScriptType::Pbs => "qsub hpc.pbs.sh",
     };
     let script = format!(
         r#"#!/bin/sh

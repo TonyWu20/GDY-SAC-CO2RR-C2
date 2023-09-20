@@ -1,9 +1,10 @@
-directory: adsorption_pathways/adsorbates/CH2_coupling
+source_directory: adsorbates/CH2_coupling
+target_directory: CH2_coupling
 Adsorbates:
   - name: COOH
     coordAtomIds: [1]
-    stemAtomIds: [2,3]
-    planeAtomIds: [1,2,3]
+    stemAtomIds: [2, 3]
+    planeAtomIds: [1, 2, 3]
     plane_angle: 90.0
     stem_angle_at_coord: 0.0
     bSym: false
@@ -12,7 +13,7 @@ Adsorbates:
     pathName: CH2
   - name: CO
     coordAtomIds: [1]
-    stemAtomIds: [1,2]
+    stemAtomIds: [1, 2]
     stem_angle_at_coord: 90.0
     bSym: false
     upperAtomId: 2
@@ -20,8 +21,8 @@ Adsorbates:
     pathName: CH2
   - name: COH
     coordAtomIds: [1]
-    stemAtomIds: [1,2]
-    planeAtomIds: [1,2,3]
+    stemAtomIds: [1, 2]
+    planeAtomIds: [1, 2, 3]
     plane_angle: 90.0
     stem_angle_at_coord: 90.0
     bSym: false
@@ -30,8 +31,8 @@ Adsorbates:
     pathName: CH2
   - name: CH2
     coordAtomIds: [1]
-    stemAtomIds: [2,3]
-    planeAtomIds: [1,2,3]
+    stemAtomIds: [2, 3]
+    planeAtomIds: [1, 2, 3]
     plane_angle: 90.0
     stem_angle_at_coord: 0.0
     bSym: true
@@ -40,8 +41,8 @@ Adsorbates:
     pathName: CH2
   - name: CH3
     coordAtomIds: [1]
-    stemAtomIds: [1,1] # The virtual stem is from atom 1 pointing perpendicularly to plane #2,#3,#4
-    planeAtomIds: [2,3,4]
+    stemAtomIds: [1, 1] # The virtual stem is from atom 1 pointing perpendicularly to plane #2,#3,#4
+    planeAtomIds: [2, 3, 4]
     plane_angle: 0.0
     stem_angle_at_coord: 90.0
     bSym: true
@@ -49,9 +50,9 @@ Adsorbates:
     atomNums: 4
     pathName: CH2
   - name: C2H6
-    coordAtomIds: [2,3]
-    stemAtomIds: [2,3]
-    planeAtomIds: [2,3,8]
+    coordAtomIds: [2, 3]
+    stemAtomIds: [2, 3]
+    planeAtomIds: [2, 3, 8]
     plane_angle: 60.0
     stem_angle_at_coord: 0.0
     bSym: true

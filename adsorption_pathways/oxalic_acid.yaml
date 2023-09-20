@@ -1,0 +1,33 @@
+source_directory: adsorbates/oxalic_acid
+target_directory: oxalic_acid
+Adsorbates:
+  - name: C2O4
+    coordAtomIds: [1, 2]
+    stemAtomIds: [1, 2]
+    planeAtomIds: [1, 2, 3]
+    plane_angle: 0.0
+    stem_angle_at_coord: 0.0
+    bSym: true
+    upperAtomId: 4
+    atomNums: 6
+    pathName: oxalic_acid
+  - name: HC2O4
+    coordAtomIds: [1, 2]
+    stemAtomIds: [1, 2]
+    planeAtomIds: [1, 2, 3]
+    plane_angle: 0.0
+    stem_angle_at_coord: 0.0
+    bSym: true
+    upperAtomId: 4
+    atomNums: 7
+    pathName: oxalic_acid
+  - name: H2C2O4
+    coordAtomIds: [1, 2]
+    stemAtomIds: [1, 2]
+    planeAtomIds: [1, 2, 3]
+    plane_angle: 0.0
+    stem_angle_at_coord: 0.0
+    bSym: true
+    upperAtomId: 4
+    atomNums: 8
+    pathName: oxalic_acid

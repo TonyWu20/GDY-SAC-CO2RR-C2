@@ -13,7 +13,7 @@ use cpt::{data::ELEMENT_TABLE, element::Element};
 
 pub fn load_base_model() -> Result<GDYLattice<MsiModel>, std::io::Error> {
     let cwd = env!("CARGO_MANIFEST_DIR");
-    let basic_model_file = std::fs::read_to_string(&format!("{}/../resources/SAC_GDY_M.msi", cwd))
+    let basic_model_file = std::fs::read_to_string(format!("{}/../resources/SAC_GDY_M.msi", cwd))
         .unwrap_or_else(|e| panic!("Error when loading basic model, {e}"));
     let lattice = LatticeModel::from_str(basic_model_file.as_str()).unwrap();
     let gdy_base_lattice = GDYLattice::new(lattice, "SAC_GDY_M".to_string());
