@@ -6,8 +6,7 @@ use crate::tasks::{gen_ethane_pathway_seeds, post_copy_potentials};
 use clap::{Parser, ValueEnum};
 use tasks::{
     batch_submission_script, gen_ethyne_pathway_seeds, gen_ketene_pathway_seeds,
-    gen_oxalic_acid_seeds, gen_water_pathway_seeds, generate_seeds, reorganize_folders,
-    ServerScriptType,
+    gen_oxalic_acid_seeds, gen_water_pathway_seeds, reorganize_folders, ServerScriptType,
 };
 
 // use basic_models::gdy_model_edit::generate_all_metal_models;
