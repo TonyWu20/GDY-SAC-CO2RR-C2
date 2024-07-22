@@ -371,8 +371,7 @@ pub fn post_copy_potentials(
                 .parent()
                 .unwrap()
                 .to_str()
-                .unwrap()
-                .clone();
+                .unwrap();
             let cell_name = filepath.file_stem().unwrap().to_str().unwrap().to_owned();
             let writer: SeedWriter<GeomOptParam> = SeedWriter::build(&cell)
                 .with_seed_name(&cell_name)
