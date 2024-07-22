@@ -1,0 +1,13 @@
+source_directory: adsorbates/ethyne
+target_directory: ethyne
+Adsorbates:
+  - name: HCCH
+    coordAtomIds: [1, 2]
+    stemAtomIds: [1, 2]
+    planeAtomIds: [1, 2, 3]
+    plane_angle: 0.0
+    stem_angle_at_coord: 0.0
+    bSym: true
+    upperAtomId: 1
+    atomNums: 4
+    pathName: ethyne
