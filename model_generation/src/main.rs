@@ -93,26 +93,29 @@ fn main() -> Result<(), Box<dyn Error>> {
                 println!("{}", target_dir_path);
                 println!("{}", potential_loc_path);
             }
-            Mode::Fast => match pathway {
-                Pathway::Ethane => {
-                    gen_ethane_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?
-                }
-                Pathway::Ethyne => {
-                    gen_ethyne_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?
-                }
-                Pathway::Water => {
-                    gen_water_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?
-                }
-                Pathway::Ketene => {
-                    gen_ketene_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?
-                }
-                Pathway::OxalicAcid => {
-                    gen_oxalic_acid_seeds(&target_dir_path, &potential_loc_path, edft)?
-                }
-            },
+            Mode::Fast => {
+                match pathway {
+                    Pathway::Ethane => {
+                        gen_ethane_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?
+                    }
+                    Pathway::Ethyne => {
+                        gen_ethyne_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?
+                    }
+                    Pathway::Water => {
+                        gen_water_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?
+                    }
+                    Pathway::Ketene => {
+                        gen_ketene_pathway_seeds(&target_dir_path, &potential_loc_path, edft)?
+                    }
+                    Pathway::OxalicAcid => {
+                        gen_oxalic_acid_seeds(&target_dir_path, &potential_loc_path, edft)?
+                    }
+                };
+                batch_submission_script(&target_dir_path, script_type, false)?
+            }
             Mode::Reorg => {
                 reorganize_folders(&target_dir_path)?;
-                batch_submission_script(&target_dir_path, script_type)?
+                batch_submission_script(&target_dir_path, script_type, true)?
             }
             Mode::Post => {
                 post_copy_potentials(&target_dir_path, &potential_loc_path)?;

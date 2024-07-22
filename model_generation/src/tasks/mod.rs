@@ -446,6 +446,7 @@ pub enum ServerScriptType {
 pub fn batch_submission_script(
     target_directory: &str,
     script_type: ServerScriptType,
+    reorganized: bool,
 ) -> Result<(), io::Error> {
     let script_type = match script_type {
         ServerScriptType::Lsf => "bsub MS70_YW_CASTEP.lsf",
@@ -458,17 +459,22 @@ for i in `find . -maxdepth 1 -mindepth 1 -type d`; do
     {script_type} && cd ..
 done"#
     );
-    let metal_elements = available_metals();
-    metal_elements.iter().try_for_each(|elm| {
-        let metal_dir = format!("{}/{}", target_directory, elm.symbol());
-        let script_path = format!("{metal_dir}/batch_submit.sh");
+    if reorganized {
+        let metal_elements = available_metals();
+        metal_elements.iter().try_for_each(|elm| {
+            let metal_dir = format!("{}/{}", target_directory, elm.symbol());
+            let script_path = format!("{metal_dir}/batch_submit.sh");
+            write(script_path, &script)
+        })
+    } else {
+        let script_path = format!("{target_directory}/batch_submit.sh");
         write(script_path, &script)
-    })
+    }
 }
 
 fn available_metals() -> Vec<Element> {
     let d3_metals = &ELEMENT_TABLE[20..30];
     let d4_metals = &ELEMENT_TABLE[38..48];
     let d5_metals = &ELEMENT_TABLE[56..80];
-    vec![d3_metals, d4_metals, d5_metals].concat()
+    [d3_metals, d4_metals, d5_metals].concat()
 }
