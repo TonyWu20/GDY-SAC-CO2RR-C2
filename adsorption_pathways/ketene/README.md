@@ -7,3 +7,9 @@
 The subsequent product could be CH3COO, or CH2CHO to other C2 products
 
 ![pathway_1](./ketene_1.gif)
+
+Modelled intermediates:
+
+1. OCCH_CC (compete with OCCH_C in **Ethane Branch I**)
+2. OCCH_C (same as in **Ethane Branch I**)
+3. ketene

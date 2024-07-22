@@ -20,6 +20,7 @@ gdy_sac_models
 
 # macOS
 .DS_Store
+**/*.icloud
 
 # local resources
 /Potentials
@@ -28,3 +29,6 @@ gdy_sac_models
 ethane_pathway_models
 ethyne_pathway_models
 water_pathway_models
+
+**/*.docx
+
