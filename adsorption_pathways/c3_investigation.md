@@ -8,7 +8,7 @@ Key points:
 4. COCH3 -> COCOCH3 for C3 pathway producing CH3COCH3 acetone. (Nature Communications volume 11, Article number: 2455 (2020))
 5. COCOH can lead to C2 and C3 products at high pH. The pH change will lead to kinetical block of C1 pathway or C2/C3 pathway. (J. Am. Chem. Soc. 2016, 138, 2, 483–486)
 6. CHOCOCHOH is the branch intermediates for two groups of C3 products. (Preprint from Research Square, 21 Sep 2020
-   DOI: 10.21203/rs.3.rs-66715/v1. Sargent's group's work) ![pathway](./C3_path1.jpg
+   DOI: 10.21203/rs.3.rs-66715/v1. Sargent's group's work) ![pathway](./C3_path1.jpg)
 7. 3 CO -> OCCOCO (J. Mater. Chem. A, 2022,10, 5998-6006 )
 8. Try numerous C2 intermediates coupling with CO\*to form C3 intermediate. HCCH\* and/or CH3CHO\* intermediates have the most favorable kinetics to form a C3 intermediate depending on the surface structure. (J. Phys. Chem. C 2021, 125, 48, 26437–26447)
 
